@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP32_Host_MIDI.h>
 #include <UARTConnection.h>
+#include <WiFi.h>
 #include <esp_wifi.h>
 
 #include "config.h"
@@ -23,6 +24,7 @@ static int lastEventIndex = -1;
 static uint32_t uartToNowCount = 0;
 static uint32_t nowToUartCount = 0;
 static uint32_t lastStatusMs = 0;
+static uint32_t lastBeaconMs = 0;
 static uint32_t ledOffMs = 0;
 
 static bool peerMacConfigured(const uint8_t mac[6]) {
@@ -157,9 +159,9 @@ void setup() {
     setLed(false);
 #endif
 
-    // GPIO20/21 are UART0 on the C3 Super Mini (silk RX/TX). Serial is USB
-    // CDC (the USB-C port), so MIDI uses Serial0 and debug logs stay on USB.
-    if (!uartMIDI.begin(Serial0, MIDI_RX_PIN, MIDI_TX_PIN)) {
+    // UART0 (GPIO1/3) is the USB-serial chip. MIDI uses UART2 on RX2/TX2
+    // (GPIO16/17) so debug logs stay on Micro-USB.
+    if (!uartMIDI.begin(Serial2, MIDI_RX_PIN, MIDI_TX_PIN)) {
         Serial.println("UART MIDI begin() failed");
     }
     midiHandler.addTransport(&uartMIDI);
@@ -176,6 +178,9 @@ void setup() {
     if (!ok) {
         Serial.println("ESP-NOW begin() failed — check radio init");
     }
+    // midiHandler.addTransport() already calls setMidiCallback() so incoming
+    // ESP-NOW bytes are parsed into the shared queue. The jam example sets
+    // that callback itself because it does not use MIDIHandler at all.
     midiHandler.addTransport(&espNow);
 
     MIDIHandlerConfig cfg;
@@ -184,13 +189,21 @@ void setup() {
 
     uint8_t localMac[6] = {};
     espNow.getLocalMAC(localMac);
-    printMac("This board MAC", localMac);
+    printMac("This board STA MAC (use this for ESPNOW_PEER_MAC)", localMac);
+    uint8_t apMac[6] = {};
+    espNow.getApMAC(apMac);
+    printMac("This board AP MAC", apMac);
 
     uint8_t channel = 0;
     wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
     esp_wifi_get_channel(&channel, &second);
-    Serial.printf("ESP-NOW channel: %u (configured %u)\n", channel, ESPNOW_CHANNEL);
-    Serial.printf("UART MIDI: RX=GPIO%d TX=GPIO%d @ 31250 baud\n",
+    Serial.printf("WiFi STA started=%d  AP started=%d  ESP-NOW channel: %u (configured %u)\n",
+                  WiFi.STA.started(), WiFi.AP.started(), channel, ESPNOW_CHANNEL);
+    if (channel != ESPNOW_CHANNEL) {
+        Serial.println("WARNING: radio channel does not match ESPNOW_CHANNEL — boards will not see each other");
+    }
+    Serial.printf("TX power: %d (quarter-dBm)\n", static_cast<int>(WiFi.getTxPower()));
+    Serial.printf("UART MIDI: RX=GPIO%d TX=GPIO%d @ 31250 baud (UART2)\n",
                   MIDI_RX_PIN, MIDI_TX_PIN);
 
     Serial.println("Transports:");
@@ -203,6 +216,11 @@ void setup() {
 
 void loop() {
     midiHandler.task();
+
+    if (millis() - lastBeaconMs >= 1000) {
+        lastBeaconMs = millis();
+        espNow.sendBeacon();
+    }
 
     const auto& queue = midiHandler.getQueue();
     for (const auto& ev : queue) {
@@ -248,8 +266,19 @@ void loop() {
 
     if (millis() - lastStatusMs >= 5000) {
         lastStatusMs = millis();
-        Serial.printf("stats  UART->NOW=%lu  NOW->UART=%lu\n",
-                      (unsigned long)uartToNowCount,
-                      (unsigned long)nowToUartCount);
+        uint8_t liveChannel = 0;
+        wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
+        esp_wifi_get_channel(&liveChannel, &second);
+        Serial.printf(
+            "stats  UART->NOW=%lu  NOW->UART=%lu  ch=%u  tx_ok=%lu  tx_fail=%lu  rx=%lu  beacon=%lu  peers=%lu  rssi=%d\n",
+            (unsigned long)uartToNowCount,
+            (unsigned long)nowToUartCount,
+            (unsigned)liveChannel,
+            (unsigned long)espNow.txOkCount(),
+            (unsigned long)espNow.txFailCount(),
+            (unsigned long)espNow.rxCount(),
+            (unsigned long)espNow.beaconCount(),
+            (unsigned long)espNow.peerCount(),
+            (int)espNow.lastRssi());
     }
 }
