@@ -176,6 +176,9 @@ void setup() {
     if (!ok) {
         Serial.println("ESP-NOW begin() failed — check radio init");
     }
+    // midiHandler.addTransport() already calls setMidiCallback() so incoming
+    // ESP-NOW bytes are parsed into the shared queue. The jam example sets
+    // that callback itself because it does not use MIDIHandler at all.
     midiHandler.addTransport(&espNow);
 
     MIDIHandlerConfig cfg;
@@ -189,7 +192,11 @@ void setup() {
     uint8_t channel = 0;
     wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
     esp_wifi_get_channel(&channel, &second);
-    Serial.printf("ESP-NOW channel: %u (configured %u)\n", channel, ESPNOW_CHANNEL);
+    Serial.printf("WiFi STA started=%d  ESP-NOW channel: %u (configured %u)\n",
+                  WiFi.STA.started(), channel, ESPNOW_CHANNEL);
+    if (channel != ESPNOW_CHANNEL) {
+        Serial.println("WARNING: radio channel does not match ESPNOW_CHANNEL — boards will not see each other");
+    }
     Serial.printf("UART MIDI: RX=GPIO%d TX=GPIO%d @ 31250 baud\n",
                   MIDI_RX_PIN, MIDI_TX_PIN);
 
@@ -248,8 +255,14 @@ void loop() {
 
     if (millis() - lastStatusMs >= 5000) {
         lastStatusMs = millis();
-        Serial.printf("stats  UART->NOW=%lu  NOW->UART=%lu\n",
+        uint8_t liveChannel = 0;
+        wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
+        esp_wifi_get_channel(&liveChannel, &second);
+        Serial.printf("stats  UART->NOW=%lu  NOW->UART=%lu  ch=%u  tx_ok=%lu  tx_fail=%lu\n",
                       (unsigned long)uartToNowCount,
-                      (unsigned long)nowToUartCount);
+                      (unsigned long)nowToUartCount,
+                      (unsigned)liveChannel,
+                      (unsigned long)espNow.txOkCount(),
+                      (unsigned long)espNow.txFailCount());
     }
 }

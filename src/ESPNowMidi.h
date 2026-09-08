@@ -1,20 +1,38 @@
 #pragma once
 
 #include <ESPNowConnection.h>
+#include <WiFi.h>
 #include <esp_now.h>
+#include <esp_wifi.h>
 #include <cstring>
 
 // ESPNowConnection::sendMidiMessage() always transmits to the broadcast
 // address, even after addPeer(). This wrapper keeps the library transport
 // for receive/parsing, and sends unicast when a peer MAC is configured.
+//
+// Arduino-ESP32 3.x needs the STA interface fully started (and the channel
+// locked) before esp_now_init(), or send returns OK while the other board
+// never receives. That is the official ESP-NOW Broadcast example sequence:
+//   WiFi.mode(WIFI_STA); WiFi.setChannel(n); while (!WiFi.STA.started()) ...
 class ESPNowMidi : public ESPNowConnection {
 public:
     bool beginBroadcast(uint8_t channel) {
         useUnicast = false;
-        return begin(channel);
+        if (!prepareRadio(channel)) {
+            return false;
+        }
+        if (!begin(channel)) {
+            return false;
+        }
+        lockChannel(channel);
+        hookSendStatus();
+        return true;
     }
 
     bool beginUnicast(uint8_t channel, const uint8_t mac[6]) {
+        if (!prepareRadio(channel)) {
+            return false;
+        }
         if (!begin(channel)) {
             return false;
         }
@@ -23,6 +41,8 @@ public:
             return false;
         }
         useUnicast = true;
+        lockChannel(channel);
+        hookSendStatus();
         return true;
     }
 
@@ -39,7 +59,72 @@ public:
 
     void getPeerMAC(uint8_t mac[6]) const { memcpy(mac, peerMac, 6); }
 
+    uint32_t txOkCount() const { return txOk; }
+    uint32_t txFailCount() const { return txFail; }
+
 private:
     bool useUnicast = false;
     uint8_t peerMac[6] = {};
+    static volatile uint32_t txOk;
+    static volatile uint32_t txFail;
+
+    static bool prepareRadio(uint8_t channel) {
+        WiFi.persistent(false);
+        WiFi.mode(WIFI_STA);
+        if (channel >= 1 && channel <= 13) {
+            WiFi.setChannel(channel);
+        }
+
+        const uint32_t deadline = millis() + 2000;
+        while (!WiFi.STA.started() && (int32_t)(millis() - deadline) < 0) {
+            delay(10);
+        }
+        if (!WiFi.STA.started()) {
+            return false;
+        }
+
+        WiFi.setSleep(false);
+        WiFi.setTxPower(WIFI_POWER_19_5dBm);
+        lockChannel(channel);
+        return true;
+    }
+
+    static void lockChannel(uint8_t channel) {
+        if (channel < 1 || channel > 13) {
+            return;
+        }
+        esp_wifi_set_ps(WIFI_PS_NONE);
+        esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
+    }
+
+    static void hookSendStatus() {
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 3, 0)
+        esp_now_register_send_cb(onSend);
+#else
+        esp_now_register_send_cb(onSendLegacy);
+#endif
+    }
+
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 3, 0)
+    static void onSend(const wifi_tx_info_t* info, esp_now_send_status_t status) {
+        (void)info;
+        if (status == ESP_NOW_SEND_SUCCESS) {
+            txOk++;
+        } else {
+            txFail++;
+        }
+    }
+#else
+    static void onSendLegacy(const uint8_t* mac, esp_now_send_status_t status) {
+        (void)mac;
+        if (status == ESP_NOW_SEND_SUCCESS) {
+            txOk++;
+        } else {
+            txFail++;
+        }
+    }
+#endif
 };
+
+volatile uint32_t ESPNowMidi::txOk = 0;
+volatile uint32_t ESPNowMidi::txFail = 0;

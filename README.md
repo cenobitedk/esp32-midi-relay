@@ -100,20 +100,24 @@ Edit `src/config.h`:
 
 Use two boards on the same channel. For unicast, set each board's `ESPNOW_PEER_MAC` to the **other** board's printed MAC.
 
+`midiHandler.addTransport(&espNow)` is what wires receive into the queue. Do **not** copy `espNow.setMidiCallback(...)` from the jam example — that sketch does not use MIDIHandler, and replacing the callback would stop events from reaching the bridge.
+
+If one board logs `UART -> NOW` but the other stays at `NOW->UART=0`, check that both boot lines show the same `ESP-NOW channel` and `WiFi STA started=1`. Super Mini antennas are weak; keep the boards close while testing. The stats line also prints `tx_ok` / `tx_fail` from the ESP-NOW send callback.
+
 ## Serial log
 
 ```
 UART DIN-5 <-> ESP-NOW MIDI bridge
 ESP-NOW mode: broadcast
 This board MAC AA:BB:CC:DD:EE:FF
-ESP-NOW channel: 1 (configured 1)
+WiFi STA started=1  ESP-NOW channel: 1 (configured 1)
 UART MIDI: RX=GPIO20 TX=GPIO21 @ 31250 baud
 Transports:
   [0] UART connected=1
   [1] ESP-NOW connected=1
 UART -> NOW NoteOn ch=1 C4 vel=100
 NOW -> UART NoteOff ch=1 C4 vel=0
-stats  UART->NOW=12  NOW->UART=12
+stats  UART->NOW=12  NOW->UART=12  ch=1  tx_ok=12  tx_fail=0
 ```
 
 ## License
