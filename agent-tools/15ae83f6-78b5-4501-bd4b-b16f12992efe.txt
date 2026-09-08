@@ -1,0 +1,1364 @@
+Getting Started with the ESP32-C3 Super Mini | Random Nerd Tutorials
+
+# Getting Started with the ESP32-C3 Super Mini
+
+The ESP32-C3 Super Mini is a compact development board based on the Espressif ESP32-C3 chip, part of the ESP32 family. Its main advantages over other ESP32 boards are its small size and low power consumption in deep sleep mode. In this guide, we’ll introduce the ESP32-C3 Super Mini, explore its features and pinout, show you how to program it using the Arduino IDE, and run a few examples to test the board.
+
+## Table of Contents
+
+In this guide, we’ll cover the following topics:
+
+- Introducing the ESP32-C3 Super Mini
+- ESP32-C3 Super Mini Technical Specifications
+- ESP32-C3 Super Mini Peripheral Interface
+- ESP32-C3 Super Mini Pinout
+- Programming the ESP32 C3 Super Mini with Arduino IDE
+- Testing Wi-Fi on the ESP32-C3 Super Mini (Web Server)
+- Sleep Modes with the ESP32-C3 Super Mini
+
+- ESP32-C3 Super Mini – Deep Sleep with Timer Wake-Up
+- Power Consumption in Deep Sleep Mode
+
+## Introducing the ESP32-C3 Super Mini
+
+The ESP32-C3 Super Mini is a compact development board featuring the ESP32-C3 chip with built-in Wi-Fi and Bluetooth. Unlike other ESP32 board models, this one is a single-core chip. It has a very small footprint and is optimized for low power consumption, drawing only around 43µA in deep sleep mode, according to the datasheet. The board has 16 pins, with 11 programmable GPIOs that support ADC, PWM, UART, I2C, and SPI.
+
+It includes both RST (reset) and BOOT buttons. The BOOT button is used to put the board into bootloader mode for uploading code, while the RST button resets the board—useful for restarting and running newly uploaded code.
+
+The board also features a USB-C interface, which can be used for powering the board, uploading code, or serial communication. Alternatively, you can power the board using an external 5V source through the 5V and GND pins—but note that the USB-C port shouldn’t be used at the same time as an external power source.
+
+Like many other ESP32 board models, it comes with an onboard LED. But, in this case, it’s connected to GPIO 8 (instead of GPIO 2 in most boards).
+
+## ESP32-C3 Super Mini Technical Specifications
+
+Here’s a summary of the ESP32-C3 technical specifications:
+
+- Processor: 32-bit RISC-V CPU running up to 160 MHz
+- IEEE 802.11b /g/n WiFi and Bluetooth 5 (LE) protocols
+- 400KB SRAM, 384KB ROM and built-in 4M flash
+- Compact SMD antenna
+- 11 GPIOs that support the following interfaces: 
+
+- 4 ADC pins
+- PWM
+- UART
+- I2C
+- SPI
+- Onboard LED on GPIO 8
+- Reset and Boot buttons
+- Ultra low power consumption: as low as 43uA in deep sleep mode
+- Small form factor
+
+You can also take a look at the following table:
+
+| Microcontroller (processor) | Espressif ESP32-C3 (32-RISC-V single-core, up to 160 MHz) |
+| --- | --- |
+| Flash Memory | 4 MB (onboard SPI flash) |
+| SRAM | 400 KB |
+| ROM | 384 KB |
+| Wi-Fi | 802.11 b/g/n, 2.4 GHz, up to 150 Mbps |
+| Bluetooth | Bluetooth 5.0 LE |
+| GPIO Pins | 11 accessible GPIOs |
+| Analog Inputs (ADC) | 2 × 12-bit SAR ADCs, up to 6 channels |
+| PWM Channels | 6 channels |
+| SPI | 3 × SPI interfaces (SPI0, SPI1 reserved) |
+| I2C | 1 × I2C interface |
+| UART | 2 × UART interfaces |
+| I2S | 1 × I2S interface |
+| USB Interface | USB-C, supports USB CDC |
+| Power Supply | 5V via USB-C or 3.3V–6V via VIN (5V) pin; onboard 3.3V regulator (up to 500 mA) |
+| Operating Voltage | 3.3V (logic level for GPIOs) |
+| Deep Sleep Mode | 43uA |
+| Buttons | 1 × Reset button, 1 × Boot button (GPIO9) |
+| LED | 1 × onboard LED (on GPIO8, active low) |
+| Programming | Arduino IDE, ESP-IDF, MicroPython, PlatformIO/pioarduino |
+
+### Where to Buy ESP32-C3 Super Mini?
+
+The ESP32-C3 Super Mini board is widely available on many different stores. Check the following link to compare its price on different stores:
+
+- Buy ESP32-C3 Super Mini
+
+## ESP32-C3 Super Mini Peripheral Interface
+
+The ESP32-C3 Super Mini comes with 16 pins, 11 of which are programmable GPIOs that you can use to control peripherals and read sensors. It supports the following peripheral interfaces:
+
+- Digital I/O
+- PWM
+- ADC
+- PWM
+- UART
+- I2C
+- SPI
+
+## ESP32-C3 Super Mini Pinout
+
+The following picture shows the pinout for the ESP32-C3 Super Mini board. Please note that the pinout can change slightly depending on the manufacturer. So, double-check the pinout with the pin mapping on the silkscreen of your board.
+
+The following table describes the pin mapping and its functions.
+
+| Pin | Function |
+| --- | --- |
+| 3V3 | 3.3V output/input (outputs 3.3V from the onboard regulator, or it is a input for external 3.3V power supply) |
+| 5V | 5V input/output (connects to the USB-C 5V or external 5V supply) |
+| GND | GND pin |
+| GPIO 0 | General-purpose I/O, ADC1, PWM |
+| GPIO 1 | General-purpose I/O, ADC1, PWM |
+| GPIO 2 | General-purpose I/O ADC1, Strapping Pin (Boot Mode) (avoid for general use) |
+| GPIO 3 | General-purpose I/O, PWM |
+| GPIO 4 | General-purpose I/O, PWM, default SPI SCK pin |
+| GPIO 5 | General-purpose I/O, PWM, default SPI MISO pin |
+| GPIO 6 | General-purpose I/O, PWM, default SPI MOSI pin |
+| GPIO 7 | General-purpose I/O, PWM, default SPI SS pin |
+| GPIO 8 | Connected to the onboard LED (active low); Strapping Pin (avoid for general use); Default I2C SDA pin |
+| GPIO 9 | Connected to BOOT Button (LOW to enter bootloader), Strapping Pin (avoid for general use) Default I2C SCL pin |
+| GPIO 10 | General-purpose I/O, PWM |
+| GPIO 20 | General-purpose I/O, PWM, default UART RX Pin |
+| GPIO 21 | General-purpose I/O, PWM, default UART TX Pin |
+
+Strapping Pins
+
+- GPIO 2: a strapping to enter bootloader mode – avoid for general use.
+- GPIO 8: connected to the onboard blue LED (inverted logic/active LOW); it’s also a strapping pin;
+- GPIO 9: connected to the BOOT button – avoid for general use;
+
+You can still use the strapping pins in your projects, however, you need to take into account the fluctuation of the state of these GPIOs when the ESP32 resets or enters into bootloader mode.
+
+Power Pins
+
+When it comes to power pins, you have one 5V, one 3V3, and a GND pin.
+
+The 3V3 pin provides 3.3V from the onboard regulator or accepts 3.3V from an external power source. Similarly, the 5V pin, can be used for input to power the board, or it outputs 5V from the USB power supply.
+
+PWM
+
+All general-purpose GPIOs can output PWM signals.
+
+Analog (ADC) Pins
+
+GPIOs 0, 1, 2, 3, 4, and 5 support analog reading:
+
+- GPIO 0: ADC1_CH0
+- GPIO 1: ADC1_CH1
+- GPIO 2: ADC1_CH2
+- GPIO 3: ADC1_CH3
+- GPIO 4: ADC1_CH4
+- GPIO 5: ADC1_CH5
+
+UART, I2C, and PWM
+
+Due to the ESP32 multiplexing feature, the UART, SPI, and I2C interfaces can be assigned to nearly any GPIO.
+
+However, when using Arduino IDE, and assuming you’re selecting the ESP32 C3 board in the Boards menu, it will assume the following pins as defaults:
+
+- UART: defaults to GPIO 20 (RX) and GPIO21 (TX)
+- SPI: defaults to GPIO6 (MISO), GPIO7 (MOSI), GPIO10 (SCK), and GPIO 5 (SS)
+- I2C: defaults to GPIO 8(SDA) and GPIO 9(SCL)
+
+### Board Datasheet
+
+For more information about the board, you can check its datasheet in the link below:
+
+- ESP32-C3 Super Mini Datasheet
+
+## Programming the ESP32 C3 Super Mini with Arduino IDE
+
+You can program the ESP32-C3 Super Mini using Arduino IDE like any other ESP32 module. To do that, follow the next steps.
+
+### 1) Installing Arduino IDE
+
+First, install Arduino IDE and the ESP32 boards.
+
+Go to the Arduino website and download the version for your operating system.
+
+- Windows: run the downloaded file and follow the instructions in the installation guide (for Windows, we recommend the first option).
+- Mac OS X: copy the downloaded file into your application folder.
+- Linux: extract the downloaded file, and open the arduino-ide file that will launch the IDE.
+
+If you have doubts, you can go to the Arduino Installation Guide.
+
+### 2) Install the ESP32 Boards in Arduino IDE
+
+To install the ESP32 boards in your Arduino IDE, follow these instructions.
+
+Open the Boards Manager. You can go to Tools > Board > Boards Manager… or you can simply click the Boards Manager icon in the left-side corner.
+
+Search for ESP32 and press the install button for esp32 by Espressif Systems version 3.X.
+
+That’s it. It should be installed after a few seconds.
+
+### 3) Putting the ESP32 C3 Super Mini in Bootloader Mode
+
+Connect the ESP32-C3 Super Mini to your computer in Bootloader Mode (ready for uploading code via USB). You may need to do this the first time you’re connecting your board to your computer.
+
+In my case, I only needed to do this procedure once, but I read some people reporting that they needed to do this every time they wanted to upload a new code.
+
+Follow these steps:
+
+1. Hold down the BOOT button.
+2. Press and release the RESET button (while still holding BOOT).
+3. Then release the BOOT button.
+
+### 4) Uploading Code to the ESP32-C3 Super Mini
+
+Copy the following code to your Arduino IDE. This code simply blinks the onboard LED (connected to GPIO 8) and prints in the Serial Monitor the current state of the GPIO.
+
+```c
+/*********
+  Rui Santos & Sara Santos - Random Nerd Tutorials
+  Complete project details at https://RandomNerdTutorials.com/getting-started-esp32-c3-super-mini/
+*********/
+
+// ESP32 C3 Super Mini on-board LED (works with inverted logic)
+const int ledPin = 8; 
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(ledPin, HIGH); 
+  Serial.println("LED OFF");
+  delay(1000);                     
+  digitalWrite(ledPin, LOW); 
+  Serial.println("LED ON");  
+  delay(5000);                     
+}
+
+```
+
+Now, select the board and COM Port. Click on the drop-down menu at the top and select the ESP32C3 Dev Module. Then, select the corresponding COM port.
+
+Then, enable the following option in the Tools menu > USB CDC on Boot.
+
+Finally, click the upload button to upload the code.
+
+Press the board RST button so that it starts running the newly uploaded code.
+
+The onboard LED will blink every second.
+
+At the same time, you can open the Serial Monitor at a baud rate of 115200. It will print the current LED state on the window.
+
+## Testing Wi-Fi on the ESP32-C3 Super Mini (Web Server)
+
+To test the Wi-Fi of the ESP32-C3 Super Mini, we’ve prepared a web server that controls the onboard LED.
+
+1) Copy the following code to your Arduino IDE.
+
+```c
+/*********
+  Rui Santos & Sara Santos - Random Nerd Tutorials
+  Complete project details at https://RandomNerdTutorials.com/getting-started-esp32-c3-super-mini/
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*********/
+
+#include <WiFi.h>
+#include <WebServer.h>
+
+// Replace with your network credentials
+const char* ssid = "REPLACE_WITH_YOUR_SSID";
+const char* password = "REPLACE_WITH_YOUR_PASSWORD";
+
+// Assign output variable to GPIO pin
+const int output = 8;
+String outputState = "OFF";
+
+// Create a web server object
+WebServer server(80);
+
+// Function to handle turning GPIO on
+void handleGPIOOn() {
+  outputState = "ON";
+  digitalWrite(output, LOW);
+  handleRoot();
+}
+
+// Function to handle turning GPIO off
+void handleGPIOOff() {
+  outputState = "OFF";
+  digitalWrite(output, HIGH);
+  handleRoot();
+}
+
+// Function to handle the root URL and show the current state
+void handleRoot() {
+  String html = "<!DOCTYPE html><html><head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+  html += "<link rel=\"icon\" href=\"data:,\">";
+  html += "<style>";
+  html += "html { font-family: Helvetica; text-align: center; background: #f5f7fa; margin: 0; padding: 20px; }";
+  html += "body { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }";
+  html += "h1 { color: #333; font-size: 28px; margin-bottom: 20px; }";
+  html += "p { color: #555; font-size: 18px; margin: 10px 0; }";
+  html += ".button { background: #4CAF50; border: none; color: white; padding: 12px 24px; text-decoration: none; font-size: 20px; border-radius: 8px; cursor: pointer; transition: background 0.2s ease; display: inline-block; width: 120px; box-sizing: border-box; }";
+  html += ".button:hover { background: #45a049; }";
+  html += ".button2 { background: #555555; }";
+  html += ".button2:hover { background: #666666; }";
+  html += "</style></head>";
+  html += "<body><h1>ESP32 Web Server</h1>";
+
+  // Display GPIO controls
+  html += "<p>GPIO - State " + outputState + "</p>";
+  if (outputState == "ON") {
+    html += "<p><a href=\"/off\"><button class=\"button button2\">OFF</button></a></p>";
+  } else {
+    html += "<p><a href=\"/on\"><button class=\"button\">ON</button></a></p>";
+  }
+
+  html += "</body></html>";
+  server.send(200, "text/html", html);
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // Initialize the output variable as output
+  pinMode(output, OUTPUT);
+  // Set the onboard LED to LOW (inverted logic)
+  digitalWrite(output, HIGH);
+
+  // Connect to Wi-Fi network
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Set up the web server to handle different routes
+  server.on("/", handleRoot);
+  server.on("/on", handleGPIOOn);
+  server.on("/off", handleGPIOOff);
+
+  // Start the web server
+  server.begin();
+  Serial.println("HTTP server started");
+}
+
+void loop() {
+  // Handle incoming client requests
+  server.handleClient();
+}
+```
+
+2) Insert your Wi-Fi network credentials in the following lines.
+
+```
+const char* ssid = "REPLACE_WITH_YOUR_SSID";
+const char* password = "REPLACE_WITH_YOUR_PASSWORD";
+```
+
+3) Upload the code to your board.
+
+4) Open the Serial Monitor at a baud rate of 115200.
+
+5) Press the board RST button.
+
+6) Its IP address will be printed in the Serial Monitor.
+
+7) Open a web browser on your local network and paste the IP address. You should get access to the web server. Click the button to control the onboard LED.
+
+## Sleep Modes with the ESP32-C3 Super Mini
+
+One of the biggest advantages of the ESP32-C3 Super Mini, besides its small form factor, is its lower consumption in sleep mode.
+
+It supports deep sleep and light sleep modes. More info on the sleep functions can be found in the documentation here.
+
+We have several tutorials explaining how to use deep sleep and light sleep with the ESP32 (however, keep in mind that some external wake-up function are different for the ESP32-C3 Super Mini).
+
+- ESP32 Light Sleep Mode and Wake-Up Sources (Arduino IDE)
+- ESP32 Deep Sleep with Arduino IDE and Wake Up Sources*
+
+* in case of external wake-up with the ESP32-C3 Super Mini, you need to use the esp_deep_sleep_enable_gpio_wakeup() function instead.
+
+### ESP32-C3 Super Mini – Deep Sleep with Timer Wake-Up
+
+The following example is a simplified code that puts the ESP32 in deep sleep mode for one minute. After each minute, it wakes up and blinks the LED connected to GPIO 8.
+
+```c
+/*********
+  Rui Santos & Sara Santos - Random Nerd Tutorials
+  Complete project details at https://RandomNerdTutorials.com/getting-started-esp32-c3-super-mini/
+*********/
+
+#define uS_TO_S_FACTOR 1000000ULL   // Microseconds to seconds
+#define TIME_TO_SLEEP 60            // Deep sleep duration in seconds
+#define LED_PIN 8                   // LED connected to GPIO 8
+
+void setup() {
+  delay(100);
+  pinMode(LED_PIN, OUTPUT);
+
+  // Blink LED (on-board LED works with inverted logic)
+  digitalWrite(LED_PIN, LOW);
+  delay(1000);
+  digitalWrite(LED_PIN, HIGH);
+
+  // Set deep sleep timer
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+
+  // Enter deep sleep
+  esp_deep_sleep_start();
+}
+
+void loop() {
+  
+}
+
+```
+
+To put the ESP32 in deep sleep mode and wake it up with a timer, call the esp_sleep_enable_timer_wakeup() function and pass the number of microseconds to sleep as argument.
+
+```c
+esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+```
+
+After setting up the wake-up source, you can put the ESP32 in deep sleep mode using esp_deep_sleep_start().
+
+```c
+esp_deep_sleep_start();
+```
+
+To test this code, make sure to connect an LED to GPIO 8 or use the onboard LED.
+
+Note: I couldn’t use the Serial Monitor with the ESP32-C3 Super Mini in deep sleep mode because it wouldn’t connect to the Serial Monitor automatically after waking up.
+
+Important: after uploading a deep sleep code to the board, to program it again, you need to do the button sequence to put it in bootloader mode.
+
+1. Hold down the BOOT button.
+2. Press and release the RESET button (while still holding BOOT).
+3. Then release the BOOT button.
+
+## Power Consumption
+
+Using the previous example on the ESP32-C3 Super Mini, I measured a deep sleep power consumption of approximately 600 µA. This is higher than the datasheet’s specified 40 uA. This is likely due to unoptimized configurations, such as floating GPIOs; or you need to use ESP-IDF to use more efficient functions.
+
+Power Consumption of the ESP32-C3 Super Mini in Deep Sleep Mode
+
+ESP32 DOIT Board – Power Consumption in Deep Sleep Mode
+
+Still, compared to a regular ESP32, which consumes about 10mA in deep sleep, the ESP32-C3’s measured 600 µA is still more efficient and a great improvement without any modifications in the code.
+
+## Wrapping Up
+
+We hope you’ve found this ESP32-C3 Super Mini getting-started guide useful. Once you’ve gotten familiar with the board and its pinout, you can use our other ESP32 projects with this particular board—just make sure to rearrange the pin assignment if needed.
+
+If you want to learn more about the ESP32, make sure to check out our resources:
+
+## 142 thoughts on “Getting Started with the ESP32-C3 Super Mini”
+
+1. DuAlvim July 17, 2025 at 3:43 pm 
+
+Thanks for this complete tutorial guys! I already made some experiments in my ESP32-C3 supermini, but this tutorial had some other uses that i didn’t try yet. This site is the best place to look for help for any ESP8266/ESP32 question! Congratulations!
+
+Reply
+
+- Sara Santos July 17, 2025 at 9:06 pm 
+
+Great! Thank you so much for your feedback. Regards, Sara
+
+Reply
+
+- Peter July 18, 2025 at 1:37 pm 
+
+Hi Sara, what a great and useful description. I’m thinking about C/C++ debug, especially together with VSC / Platform-IO ( Arduino ) and USB-C connection.
+
+Is it possible?
+
+Peter
+
+Reply
+
+- Sara Santos July 18, 2025 at 3:24 pm 
+
+Hi. I’m not sure. I haven’t investigated about that subject yet. Regards, Sara
+
+Reply
+- chusepp July 31, 2025 at 6:43 pm 
+
+Hi sara, does this small module support micropython programming ??
+
+Reply
+
+- Sara Santos July 31, 2025 at 9:51 pm 
+
+Hi. I haven’t tried it yet. But, I think so. You just need to load the right micropython firmware for this specific module. Regards, Sara
+
+Reply
+- uğur ocaksız January 1, 2026 at 3:39 pm 
+
+Thank you so much.Reading after learning….. I am61 years old.from Türkiye….
+
+Reply
+
+- Sara Santos January 2, 2026 at 2:24 pm 
+
+That’s great! I hope you learn a lot from us.
+
+Regards, Sara
+
+Reply
+2. Folarin July 17, 2025 at 6:36 pm 
+
+Hi Rui, Thanks, as usual, for your great work. My board keeps connecting and disconnecting from Device Manager despite having drivers already installed. I have an ESP32-WROOM and several ESP8266 in many flavours and they all connect well without issues. Any ideas?
+
+Reply
+
+- Sara Santos July 17, 2025 at 9:08 pm 
+
+Hi. Did you put the board into Bootloader mode?
+
+1. Hold down the BOOT button.
+2. Press and release the RESET button (while still holding BOOT).
+3. Then release the BOOT button.
+
+Regards, Sara
+
+Reply
+
+- Folarin July 17, 2025 at 9:45 pm 
+
+That fixed the problem! Thanks, Sara. You guys have been a great help over the years.
+
+Reply
+3. Rafael Lezama July 17, 2025 at 6:37 pm 
+
+Muchas gracias por el tutorial. Hace poco mas de medio año que adquirí un ESP32-C3 y no he encontrado mucha información al respecto. Con este tutorial espero poder sacarle todo el provecho y potencial a esta pequeña tarjeta tan poderosa. Muchas gracias
+
+Reply
+
+- Sara Santos July 17, 2025 at 9:08 pm 
+
+That’s great. I hope you like it. Regards, Sara
+
+Reply
+4. Sergio July 17, 2025 at 7:15 pm 
+
+Thanks for this excellent tutorial. Just one question. What about the mentioned external antenna?. The picture shows nothing connected to the board. Neither I could see the connector, and you seem not to need it in this project. Thanks,
+
+Reply
+
+- Sara Santos July 17, 2025 at 9:12 pm 
+
+Hi. I’m sorry, my mistake. The board doesn’t come with external antenna. It comes with a compact SMD antenna. It is possible to modify to add an external antenna as shown in this tutorial: peterneufeld.wordpress.com/2025/03/04/esp32-c3-supermini-antenna-modification/
+
+Regards, Sara
+
+Reply
+
+- Rafa July 17, 2025 at 10:09 pm 
+
+La tarjeta que si tiene la antena que se menciona es la ESP32-S3.
+
+Reply
+5. Paul Baker July 17, 2025 at 7:17 pm 
+
+Great tutorial as usual. But I have to mention one problem I have had with ESP32 C3s. The first batch I ordered would not connect to WIFI (or had VERY short range) and were essentially useless. Searching the web I found that some boards have a design flaw. One good source is here roryhay.es/blog/esp32-c3-super-mini-flaw It seems like one way to identify suspect boards is to look at the spacing between the capacitor labeled C3 and the ‘tip’ of the processor. On my bad boards the distance is ~1.5mm and the good boards ~3.3mm. Unfortunately, the picture you see when ordering online is not necessarily what you will receive. The good ones I have now I got from Tenstar on Aliexpress.
+
+Reply
+
+- Sara Santos July 17, 2025 at 9:14 pm 
+
+Hi. Thanks for letting me know. I didn’t know about that issue. It seems I was lucky and got the good one.
+
+Regards, Sara
+
+Reply
+- Dana Gregory September 24, 2025 at 1:29 am 
+
+I have a similar experience. I found that when the boards are plugged into a breadboard they will not connect to wifi. Just stays in the while (WiFi.status() != WL_CONNECTED) loop forever.
+
+However when not plugged into a breadboard, they connect to wifi with no problem.
+
+I am going to get some of the Seeed boards and see if they are different.
+
+Reply
+
+- Dana Gregory September 24, 2025 at 1:56 am 
+
+I’m thinking that the metal in the breadboard is affecting the antenna.
+
+I used some stacking headers (the ones with the long pins) to raise the ESP32 Mini up above the breadboard (15mm) and found that the board connects to wifi with no problem.
+
+Reply
+
+- Sara Santos September 24, 2025 at 7:44 pm 
+
+Yes. Probably when the board is on the breadboard, the breadboard blocks the signal because the antenna is blocked. Regards, Sara
+
+Reply
+6. JB July 17, 2025 at 7:47 pm 
+
+Nice to see you taking a look at the ESP32 C3 super mini. There is also a version with a U.FL connector for an external antenna.
+
+Reply
+
+- JB July 17, 2025 at 7:50 pm 
+
+Here is link to one with U.FL connector. aliexpress.com/item/1005008047249439.html?spm=a2g0o.order_list.order_list_main.185.5dbb1802DUklCB
+
+Reply
+
+- Sara Santos July 17, 2025 at 9:14 pm 
+
+Hi. Thanks. Very helpful to increase the wi-fi range. Regards, Sara
+
+Reply
+7. Paul Baker July 17, 2025 at 8:09 pm 
+
+The Tenstar boards I got from Aliexpress came with an external strip antenna and U.FL connector. I built my ESP32 into a small box with temperature and humidity sensor, an AdaFruit minibooster, and two AA batteries. Using the board by itself and the strip didn’t seem to make much difference and I was concerned that the batteries were too close or blocking the antenna. The board has great range on it’s own. BUT, there is a chance I was supposed to modify the board to use the external antenna 🙂 But I didn’t get any documentation.
+
+Reply
+8. JB July 17, 2025 at 8:22 pm 
+
+Connecting an external antenna requires replacing the capacitor location as shown in link drive.google.com/file/d/1cBRO2SdtkVlrpNa-My7ty4dWM5Lwy8xX/view?usp=drive_link
+
+Reply
+9. Bob July 17, 2025 at 8:28 pm 
+
+Very interesting board and being so small it would be handy to use for small projects, so will have a look into it, thanks for the review.
+
+Reply
+
+- Sara Santos July 17, 2025 at 9:15 pm 
+
+Hi. Thanks for your feedback. You’re welcome. Regards, Sara
+
+Reply
+10. Paul Baker July 17, 2025 at 9:02 pm 
+
+ah, thanks, I figured some mod was required. But my board is layed out differently and it’s not obvious what I need to move. Plus, caps are SO tiny I don’t know if I can manage 🙂 Wish they would just provide a jumper or little link I can fuse/cut.
+
+Reply
+
+- JB July 18, 2025 at 7:06 am 
+
+Seeed Studio XIAO makes some ESP32 c3 modules that can only be used with an external antenna, so you don’t have to solder anything it seems.
+
+Reply
+11. user July 18, 2025 at 6:33 am 
+
+how power consumption while wifi transmitting?
+
+Reply
+12. Martin July 18, 2025 at 7:07 am 
+
+Hello,
+
+(deep) sleep modes on ESP32 and how optimize them will be a great and interesting theme.
+
+I will wait for nice tutorials from you about this ;-).
+
+Thank you for all your tutorials.
+
+Reply
+13. dp July 18, 2025 at 11:05 am 
+
+Typo: Strapping not Stapping.
+
+Reply
+
+- Sara Santos July 18, 2025 at 11:10 am 
+
+Thanks for letting me know. It’s fixed now. Regards, Sara
+
+Reply
+14. dp July 18, 2025 at 11:06 am 
+
+Typos sent earlier are for the SPI line. UART: defaults to GPIO 20 (RX) and GPIO21 (TX) SPI: defaults to GPIO6 (MISO), GPIO7 (MOSI), GPIO10 (SCK), and GPIO 5 (SS) I2C: defaults to GPIO 8 (SDA) and GPIO 9 (SCL)
+
+Reply
+
+- Sara Santos July 18, 2025 at 11:15 am 
+
+Hi. Is your board like ours? Or is it a little different? The pinout might be slightly different.
+
+Regards, Sara
+
+Reply
+15. dp July 18, 2025 at 11:13 am 
+
+I had the best luck using the ESP32-C3 Super Mini when I chose the board “Nologo ESP32C3 Super Mini”. I have been using them for about a year now.
+
+Reply
+16. Karl-ottO Feger July 18, 2025 at 7:20 pm 
+
+For the Deep Sleep power consumption: On your photos, the power LED is on. That would be a good explanation for the so much higher than specified current consumption.
+
+Reply
+17. Ray Leiter July 22, 2025 at 7:57 pm 
+
+I’ve been away from things for a while, but I recently returned by reading this article and gathering the pieces I needed to experiment with it. One thing I noticed immediately was that the ESP32-C3 super mini I bought on Amazon worked for the BLINK program, but it would not connect to my local net for the Web Server. My first reaction was to try one of my ESP32-WROOM-32 boards. (ESP32 DEVKIT V1 DOIT) The Web Server worked as advertised. I’ve been taken advantage of by those people who buy the FAILED pieces from the manufacturers and then sell them on Amazon and/or eBay! I’m out a possible $9.00 approx. I did start the process of returning the bad part — maybe I’ll come out of this OK.
+
+Reply
+
+- Zairek August 29, 2025 at 3:13 pm 
+
+Have tried this step in Arduino IDE
+
+“Then, enable the following option in the Tools menu > USB CDC on Boot.”
+
+Reply
+18. Sacha July 23, 2025 at 1:53 pm 
+
+Thank you for this very precise and clear article, as usual. Are there any plans to do a similar article for using ESP32 C3 on Visual Studio Code?
+
+Reply
+19. Reini44 July 23, 2025 at 8:08 pm 
+
+Program “Deep Sleep with Timer Wake-Up” is not running.
+
+The on-board LED is on GPIO 8, not on GPIO 4. To see the Blink LED you have change the HIGH and LOW-Order from GPIO 4.
+
+Thanks,
+
+Reply
+
+- Sara Santos July 26, 2025 at 10:53 am 
+
+Hi. You may have a different ESP32 C3 mini board. The onboard LED of mine is on GPIO 8.
+
+When you say the sketch is not running, what happens exactly? Regards, Sara
+
+Reply
+
+- Reini44 July 27, 2025 at 6:36 pm 
+
+Hi, look to your sketch:
+
+https://raw.githubusercontent.com/RuiSantosdotme/Random-Nerd-Tutorials/master/Projects/ESP32-C3/ESP32-C3_Deep_Sleep_Timer_Wake_Up.ino Regards,
+
+Reply
+
+- Sara Santos July 28, 2025 at 10:24 am 
+
+Hi. Thanks for pointing that out. I’m sorry for the mistake in the code. It is fixed now. Regards, Sara
+
+Reply
+20. BobT July 23, 2025 at 9:24 pm 
+
+You measured 600uA in low power mode, but in the image the LED is illuminated. I think you’ll get better results if you remove the LED. It’s also possible that the 3.3v regulator is leaking a little…
+
+Reply
+
+- Sara Santos July 26, 2025 at 10:53 am 
+
+Yes. You’re right. The LEDs are definitely consuming additional power. Regards, Sara
+
+Reply
+- Myaow~♪ December 9, 2025 at 4:33 pm 
+
+The board has a WS2812 LED, the controller of which consumes ~500uA even when turned off 😀
+
+Reply
+21. Calum July 24, 2025 at 10:07 am 
+
+Can I check, when you are measuring the sleep current are you powering it via the 5v pin (Looks like this from the photo but not 100% sure) if so the regulator (me6211) and the onboard LED (connected to the 5V pin and USB 5v via a 5.1k resistor) will be drawing some current (based on diagram here imgse.com/i/pCUheR1). To get the lowest draw I would imagine that using the 3.3v Pin to power it with a low power buck/boost converter such as the TPS63070 (set to power save mode) would get you closer to the theoretical sleep current. Alternatively if you need to power via 5V removing the power LED would likely drastically cut the current draw. I have ordered one to try both of these options.
+
+Reply
+
+- Sara Santos July 26, 2025 at 10:55 am 
+
+Hi. Yes, that’s what we did. That’s why we don’t get the lowest power consumption.
+
+After you try out those options, can you share your results?
+
+Regards, Sara
+
+Reply
+22. Phillip Briles July 24, 2025 at 6:37 pm 
+
+After getting your email on these boards I purchased ten. I have yet to get the two I opened to upload your blink sketch. I am disappointed but such is life. I can get my SEEED boards to work but not these ones. Will try for a while longer and if no success then back they go to Amazon. I do hope I can get them to upload.
+
+Reply
+
+- Sara Santos July 25, 2025 at 4:14 pm 
+
+Hi, Did you follow the sequence to put them on flashing mode? Regards, Sara
+
+Reply
+23. Calum July 24, 2025 at 10:53 pm 
+
+I can confirm that the sleep sketch can achieve the stated 43uA when powered via the 5v pin but only if you remove the power LED from the board as it is this LED that is consuming the additional current. Fantastic tutorial.
+
+Reply
+
+- Sara Santos July 26, 2025 at 10:59 am 
+
+That’s great! Thanks for letting me know. Super useful information.
+
+Regards, Sara
+
+Reply
+24. Phillip Briles July 25, 2025 at 4:25 pm 
+
+Hi Sara, I’m shocked that you responded to my post because when I tried to confirm my email I got stuck in a WordPress page and – I guess – could not confirm my email.
+
+Anyway, I solved my Super Mini (SM) problem by downgrading the Expressif library from 3.x down to v2.o.17. After that I had no issue uploading to five (5) of my SM mcm’s.
+
+Another revelation – I tried to post this as a Reply to my post but was denied – is that after uploading the board does not react in anyway after a successful compile and upload. The fix I discovered is that by simply disconnecting the USB-C cable and reconnecting it the new sketch comes to life.
+
+That was yesterday’s discoveries. Today I cannot get these boards to compile no matter what I try. I will not give up but these board are a challenge.
+
+Thank you for your help, Phillip Briles
+
+Reply
+
+- Sara Santos July 26, 2025 at 11:03 am 
+
+Hi. Maybe you have a different board version? I didn’t have those issues with my board.
+
+However, notice that if you uploaded a deep sleep sketch to your board, it will be sleeping when you try to upload code. You need to right the RST button several times right after pressing the upload button, so that the IDE can catch your board awake. If you can’t, it may be useful to erase the flash to start again: https://randomnerdtutorials.com/esp32-erase-flash-memory/
+
+Regards, Sara
+
+Reply
+25. dp July 25, 2025 at 5:58 pm 
+
+I have found that using the “Nologo ESP32C3 Super Mini” driver in Arduino v2.3.4 works well. Here’s the github link: github.com/sidharthmohannair/Tutorial-ESP32-C3-Super-Mini/
+
+Reply
+26. Phillip Briles July 25, 2025 at 8:14 pm 
+
+Update! I accidentally uploaded a sketch I was having issue with and used the Tools/Board selection for a SEEED C3 – XIAO_ESP32C3 – and the sketch uploaded and ran perfectly.
+
+I could not upload this same sketch by using the Super Mini’s Tools/Board – ESP32C3 Dev Module. All I can add is that this works for me and that is all that matters.
+
+Thanks.
+
+Reply
+
+- Sara Santos July 26, 2025 at 11:06 am 
+
+Great! I’m glad the issue is solved. Regards, Sara
+
+Reply
+27. Ed July 27, 2025 at 6:56 pm 
+
+These are very nifty little boards. Some of them seem to have a bit of an ‘issue’: apparently the antenna placement is quite critical and some boards have components placed too close to the on board antenna, reducing the WiFi capacity. Somewhere on hackaday is a description on how to solve that with a minimal piece of wire that can be shaped a certain way and increase the wifipower again: hackaday.com/2025/04/07/simple-antenna-makes-for-better-esp32-c3-wifi/
+
+Reply
+
+- Sara Santos July 28, 2025 at 10:19 am 
+
+Thanks for sharing. Regards, Sara
+
+Reply
+28. Dusan July 31, 2025 at 6:04 pm 
+
+Hello Sara and Rui to Portugal, or in a holiday paradise. Last week I received ESP 32 C3 boards from a supplier from the Czech Republic. Yesterday I reinstalled “MottionEyeOS” on RasPi3B+ according to your instructions, everything works perfectly. Today I started the Web Server, and I wanted to use ESP32 C3 Super mini. Good thing I checked the mail. Yesterday there was a manual for the web server, I wanted to use the ESP32 C3 Supermini board and today in the mail there were instructions with this board. The first information already guided me how to boot correctly. Many thanks for your work. Have a nice summer.
+
+Reply
+
+- Sara Santos July 31, 2025 at 9:50 pm 
+
+That’s great! I’m glad this is useful. Thank you so much for your feedback. Regards, Sara
+
+Reply
+29. John August 5, 2025 at 7:27 pm 
+
+Great tutorial, yet again guys, kudos! I’ve been using the Supermini for several projects since I discovered it, and do find some qwerky things with it. One particular thing I’ve found is with some examples using GPIOs 8 and 9 for I2C, it will not boot properly. In one example I was using a library supporting a current sensor, and another library for an 0led display. That didn’t work well at all, however, another library (adafruit) worked but with limited display characteristics. I also tried using it with a tof sensor and had to move off pins 8 and 9 due to the issue above. All in all though, it’s still a good little MCU.
+
+Reply
+
+- Sara Santos August 6, 2025 at 1:08 pm 
+
+Thanks for sharing that information. Regards, Sara
+
+Reply
+30. Rick G August 16, 2025 at 5:01 pm 
+
+How do you program without the onboard USB not functioning? One of the ESP32-C3 Super Mini boards I have, has +5 and Ground shorted on the board and the USB C connector has VBUS and GND shorted.
+
+Howerver, applying +3.3v to 3.3 pin powers the unit and it seems to run the “ready to program” but there is no serial output from GPIO 21 Rx, 20 Tx, I tried connecting 3.3v USB-TTL connector and loading a program from the Arduino IDE by pressing boot,rst,then release rst, boot. It fails to connect.
+
+Reply
+
+- John August 17, 2025 at 3:54 pm 
+
+On the ESP32-C3 SuperMini, there’s actually no CH340 or CP2102 USB-to-UART chip. Instead, it uses the native USB capability of the ESP32-C3 itself, which means: – The USB-C connector is wired directly to the ESP32-C3’s internal USB peripheral. – No external USB-to-serial bridge (like CH340 or CP2102) is needed. – Serial communication and flashing are handled via the USB-Serial-JTAG interface built into the chip. This setup is lean and efficient, but it does mean that if you’re trying to tap into UART manually (e.g., for debugging or connecting to another microcontroller), you’ll need to use the dedicated UART pins—typically GPIO20 (RX) and GPIO21 (TX)—and connect them to an external USB-to-UART adapter if needed. Hope that helps.
+
+Reply
+
+- Rick G August 19, 2025 at 10:25 pm 
+
+Hi John, Thanks for the reply. Since the The USB-C connector is shorted between the VBUS and GND, I cannot program using the USB-C connector. I was trying to use an external USB-TTL to GPIO 20,21 wired like Arduino Nano’s GPIO 0,1 to boot and program bypassing the onboard USB. I plan to abandon this broken ESP32-C3 Super Mini.
+
+Reply
+
+- John August 20, 2025 at 3:22 am 
+
+Rick G. That’s probably the easiest way out IMHO unless you can find and eliminate the short. I played around a bit and after a while came to several conclusions/discoveries searching the web. 1. The Arduino IDE will set up a port when you plug in the board. IE on windows a COM. 2. – The ESP32-C3 senses VBUS (5V) from the USB connector to activate the USB peripheral. Powering from the 3.3v pin bypasses that so so the intrnal USB interface stays dormant. But then the ESP32C3 (to my understanding) does not automatically send data to pins 20/21 without being told do to so in the first place. When you select the ESP32-C3 board in the Arduino IDE and hit upload, the IDE configures the toolchain to use the native USB-CDC interface built into the ESP32-C3 chip. It doesn’t use or expect an external UART bridge like CH340 or CP2102. 3. So..ultimately you cannot upload a sketch via GPIO20 and GPIO21 (UART0) on the ESP32-C3 SuperMini by default (the ultimate bootstrap conundrum).
+
+Reply
+
+- Rick G August 20, 2025 at 5:55 pm 
+
+Good news. You can get the USB /dev/ttyACM0 device to show up by connecting the USB-C’s D-,D+ and then power +5v VBUS and GND from a breadboard power supply. The power supply provides 3.3+ to the ESP32-C3 and common GND. I was able to upload a program. Cool, I’m surprised it works at all. GPIO20 and GPIO21 are not used.
+
+Thanks for the idea!
+31. John August 20, 2025 at 10:16 pm 
+
+Ah! I only played around with 3.3v. I made the mistaken assumption that your 5v source would be shorted too. I’d say that puts it on the input side of the regulator. (Like maybe the plug itself). Good job. From what I’ve read, if you don’t need to communicate via serial monitor, your sketch should run with power on the 3.3v pin. Cheers
+
+Reply
+32. John August 21, 2025 at 5:40 pm 
+
+HI guys, regarding the ability to use serial monitor: Right after the void setup() statement, I put a “Serial.begin(115200); and then a delay (1000); I then added a Serial.println(“Awake!”); and it worked. The delay seems to give the pc and the IDE time to reinitialize the serial port. If you notice, when the ESP goes to sleep the IDE shows the com port as [not connected]. I then added a Serial.println(“Going to sleep”); after the line to set the LED pin high. At first that didn’t work because the ESP went to sleep before the serial communications ended. Adding a delay (1000) after that made it work. I haven’t played around with how short the delay can be yet, but it seems 1 sec is plenty of time for the PC and IDE to react/respond.
+
+Reply
+33. dp August 21, 2025 at 6:33 pm 
+
+Personal experience of playing around with the Super Mini for about a year is that 1500mS works well. The bigger challenge with the board is getting two SPI channels working at the same time: one for TFT and SD, and one for TS.
+
+Reply
+
+- John August 21, 2025 at 6:59 pm 
+
+dp Agree, I’ve had similar issues with I2C.
+
+Reply
+34. Thomas August 23, 2025 at 12:16 pm 
+
+Hi, I have bought some ESP32C3 super mini and XIAO ESP32C6 because of the small size – but its not possible to flash Micropython with Thonny or the esptool….
+
+Reply
+
+- Thomas September 11, 2025 at 8:19 am 
+
+Now, after update of Thonny IDE to version 4.1.7 – it works.
+
+Reply
+35. Thomas August 23, 2025 at 2:16 pm 
+
+simple question, is it possible to use it with Thonny or upcraft ?
+
+Reply
+36. Parves Al I August 30, 2025 at 5:09 pm 
+
+Hello, can i connect 3.7V directly on +5V or VIN? Will it sufficient to provide 3.3V in 3v3 pin? As you mentioned on data sheet that 5V via USB-C or 3.3V–6V via VIN (5V) pin; onboard 3.3V regulator (up to 500 mA). Should i use an external voltage booster to connect +BATT to VIN by making it 5V?
+
+Reply
+
+- Sara Santos September 1, 2025 at 9:45 am 
+
+Hi. I think you should be ok with the 3.7V on the VIN pin. Regards, Sara
+
+Reply
+37. Bob Sparkes September 3, 2025 at 10:21 pm 
+
+A most peculiar problem. This tutorial has three sketches for testing the ESP32C3. The first is a simple Blink sketch to blink the on-board LED. This sketch uploaded to the port shown by the Device Manager and by the Arduino IDE itself and ran correctly. The second sketch illustrates how a mobile can control the on-board LED and this too uploaded and worked as intended. The third sketch to illustrate Deep Sleep was tried without unplugging the ESP32C3, which showed that the same port was being used. This sketch compiled and uploaded but would not run, complaining that it could not access the port. The Device Manager was consulted but did not display any USB ports. The ESP32C3 was unplugged and replugged into the computer, but still no USB port was shown for it. I tried to go back to the Blink sketch, but could not upload it because no port was shown. Plugging the ESP32C3 into a different USB port had exactly the same effect – not showing in the Device Manager. I started again from the very beginning with a different ESP32C3 and exactly the same events occurred – things worked right up until loading the third sketch and then failed, with the ESP32C3 not being able to obtain a USB port. The same happened with a third ESP32C3 and then with a fourth. There seems to be something that happens with the third “Deep Sleep” sketch that stops the ESP32C3 port from being recognized by the Device Manager. Faced with the prospect of having “lost” my four ESP32C3s I consulted Co-Pilot about this and was advised to hold down the Boot button before plugging the ESP32C3 into the USB. That works and has restored my ESP32C3’s to normal. But it does not restore my confidence in the ESP32C3.
+
+Reply
+
+- Sara Santos September 4, 2025 at 2:04 pm 
+
+Hi.
+
+Because the board is in deep sleep mode, it is not awake to be detected by the Serial Port. It wakes up, but quickly enters deep sleep mode again and can’t be detected by the serial port. This happens in several other ESP32 models.
+
+I address that issue in the tutorial:
+
+Important: after uploading a deep sleep code to the board, to program it again, you need to do the button sequence to put it in bootloader mode.
+
+Hold down the BOOT button. Press and release the RESET button (while still holding BOOT). Then release the BOOT button.
+
+Regards, Sara
+
+Reply
+38. John September 4, 2025 at 12:46 am 
+
+When the ESP21C3 goes to sleep, the communication interface is shut down. That’s a normal power saving feature. With that sketch in place as soon as it enters deep sleep that happens. To get communications restarted, push the boot button then the reset, rease the reset, then the boot. It should then appear on the com port. Hope that helps.
+
+Reply
+
+- Sara Santos September 4, 2025 at 2:06 pm 
+
+Hi. Yes, that’s what happens. I mention in the tutorial what you need to do to get communication with the board again: Important: after uploading a deep sleep code to the board, to program it again, you need to do the button sequence to put it in bootloader mode.
+
+Hold down the BOOT button. Press and release the RESET button (while still holding BOOT). Then release the BOOT button.
+
+Regards, Sara
+
+Reply
+39. Bob Sparkes September 4, 2025 at 8:56 am 
+
+Thank you John. Your suggestion is similar to what I was advised by Copilot (described in my previous comment). This problem was one of the several that I have encountered when running the ESP32C3 with the Arduino IDE. At the moment, apart from its being a lot cheaper than the ESP32, I see no advantages over the ESP32, so I’ll continue to use this instead. I did try to use ESP-IDF, but found it very, very complicated, so after two weeks of trying, I finally gave up. I’ll be content with VSCode and PlatformIO from now on!
+
+Reply
+40. Thomas September 4, 2025 at 10:16 am 
+
+Hi, is it possible to flash it with Thonny and micropython instead of Arduino IDE ?
+
+Reply
+
+- John September 4, 2025 at 1:33 pm 
+
+This according to CoPilot: “Thonny itself doesn’t get installed on the ESP32-C3 SuperMini—it runs on your PC. But yes, you can absolutely use Thonny IDE to program the ESP32-C3 SuperMini with MicroPython, once you’ve flashed the appropriate firmware onto the board”
+
+Reply
+41. John September 4, 2025 at 1:30 pm 
+
+@Bob, I understand where you’re comming from. There is a plethora of different “flavors” of the ESP32, each with their own neuances and querks. For me the big advantage of the Supermini is the low power consumption in deep sleep. This makes it ideal for remote/battery powered sensor usages, but of course for full blown functionality I like the ESP32 wroom dev boards. Cheers
+
+Reply
+42. Joe Shmoe September 7, 2025 at 8:31 pm 
+
+You know that 90% of your 600uA deep sleep current is from that red LED, right? Desolder it or break it off and you will see about 100uA, much closer to the datasheet. Then most of THAT current is from the on-board LDO regulator, and it’s really hard to get more efficient than that, but you can do it with a buck converter straight to the 3.3v pin and desolder the onboard LDO.
+
+Reply
+
+- Sara Santos September 8, 2025 at 10:26 am 
+
+Hi. Yes. That’s right. Regards, Sara
+
+Reply
+- dave November 19, 2025 at 11:37 am 
+
+You’re correct that the LDO is wasting most of the power. Replacing the LDO with e.g. LN6206P332 (2uA IQ) gets the deep sleep current down to 7 or 11uA (I can’t remember which). Light sleep with the same regulator was 240uA, which is around double what I’ve seen stated elsewhere.
+
+Reply
+43. Bob Sparkes September 11, 2025 at 1:15 pm 
+
+I decided that I would not be beaten by the problems I was having with the ESP32-C3 Super Mini and Arduino IDE, so I tried again. I failed utterly to get it to read a BME280 and display the data to a TFT7735 at the same time. Combining SPI with I2C would not work for me, so I reverted to BME280 with a 128×64 OLED. I finally got this to work but then found it would not work with the device powered from a 5V supply via the USB input, nor with the 5V supply being connected to the 5V pin of the ESP32-C3. It only worked when powered via the USB cable from the computer. I don’t like being beaten, but I really did give up and reverted to the ESP32. No problems then!
+
+Reply
+
+- Reiner Ulrich December 7, 2025 at 11:07 pm 
+
+Bob, not exactly sure about your setup but I can confirm the following project worked perfectly fine for me: C3-Supermini + 1.54″ TFT through SPI (ST-7789) + BME280/AHT20 + Sensirion SCD40/41 both on I2C. 3 Buttons, an Onboard LED and a an LDR on other pins. VCC of the TFT connected to 5V Pin on Supermini, therefore driven from 5V-USB-Power provided to the Supermini USB-Socket (most TFT have an onboard 3.3V regulator for its own demand and the SPI interface and should be connected to the USB 5V on the Supermini, not the 3.3V rail). The BME/AHT are low-power consumers but the SCD40 can peak up to 205 mA worst case. Additional 20 uF Capacitors on 3.3V. Nevertheless, I gave it a try and the solution works fine although I think the Supermini Power regulator might have quite a bit of work to do. I did not (yet) use Wifi in this project which is another High-Power consumer. Together with the SCD40 it might overload the onboard regulator (worth a try 😉 possibly resulting in “brownouts”. So far I like using the Supermini in my designs and I guess the limitations of the onboard power regulator might be the key limitation (a plain vanilla ESP32-Devkit might have a bigger regulator with more spare power by default).
+
+Reply
+44. Jose September 11, 2025 at 10:53 pm 
+
+Buenas tardes, una pregunta. Se le puede conectar una cámara modelo ov7670? Para tomar fotos y enviar por Telegram?
+
+Reply
+45. Thomas September 12, 2025 at 8:19 am 
+
+Now, I have updated my Thonny IDE to latest version 4.1.7 Flashing firmware problems solved. Same for my XIAO ESP32-C6.
+
+Reply
+46. Jonathan Caton September 12, 2025 at 3:48 pm 
+
+Have you tried it with a battery? What is the point of deep sleep mode if you cant power it from a battery? The Raspberry Pi Pico works very well with simple battery packs or AA batteries. Can you recommend what battery configuration to buy so I can run it from a battery? Thanks
+
+Reply
+
+- John September 13, 2025 at 2:16 pm 
+
+Johnathan, I’m currently running one from a 3v Lifepo. I’m also running an Esp8266 coupled to an ultrasonic sensor the same way, putting it to sleep. The battery lasts for weeks. When powered this way I power through the 3.3v pin not the USB plug, and on the Supermini I’ve removed the power led, which is the main power draw when in sleep mode. Some have said the battery should last for months or more, on the super mini. I haven’t had the opportunity to prove that yet.
+
+Reply
+
+- Jonathan September 14, 2025 at 8:09 am 
+
+Hi John, Thanks very much for your info on using a LiPo battery. This makes a lot more sense to me now, I am going to buy:- thepihut.com/products/500mah-3-7v-lipo-battery and this so I can charge it up through USB:- thepihut.com/products/adafruit-micro-lipo-usb-liion-lipoly-charger-v1
+
+Reply
+- Graham October 23, 2025 at 3:42 pm 
+
+I have powered it successfully from a 18650 LiPo cell driving into the 3V3 input. I have had the battery voltage up to 4.2V with no problems. The cell voltage drops by ~5mV per day, but I have removed the 5V regulator as well. I found that the regulator draws current from the 3V3 even though it is not used and this can be very significant.
+
+Reply
+47. Paulo September 24, 2025 at 1:53 pm 
+
+hi there is a red Led on in the board, how the current is 600uA no deep sleep ? the red is ON….
+
+Reply
+48. Paulo André September 26, 2025 at 10:30 am 
+
+About his: “Connect the ESP32-C3 Super Mini to your computer in Bootloader Mode (ready for uploading code via USB). You may need to do this the first time you’re connecting your board to your computer.
+
+In my case, I only needed to do this procedure once, but I read some people reporting that they needed to do this every time they wanted to upload a new code.
+
+Follow these steps:
+
+1.Hold down the BOOT button. 2.Press and release the RESET button (while still holding BOOT). 3.Then release the BOOT button.”
+
+do this: to put the super mini board on automatic update ->plug the board in the USB conecttor while press the BOOT , after this the update is controlled by Arduino IDE
+
+Reply
+49. Andy October 21, 2025 at 6:15 pm 
+
+If WiFi don’t connect try
+
+WiFi.begin(ssid, password); WiFi.setTxPower(WIFI_POWER_8_5dBm);
+
+This helps me with my cheap China-Clone
+
+Reply
+50. Graham October 23, 2025 at 3:36 pm 
+
+I have used this board powered from a single 18650 Lipo cell driving into the 3V3 input. I have operated it successfully up to 4.2V with no signs of overstressing the components. Current consumption when powered into the 3V3 input is really low. I have also removed the 5V regulator off the board because I have found that they can give rise to significant current drain, even though not used. The board can still be programmed using a USB to serial convertor module that has a 3V3 output. I am using it to drive a servo operated valve for watering plants where there is only a water butt and no power.
+
+Reply
+
+- Jonathan October 24, 2025 at 2:06 pm 
+
+Thanks for info. I am getting my Lipo cell next week with increasing confidence it will work!!!
+
+Reply
+51. Michele Moore October 23, 2025 at 6:35 pm 
+
+This SUPERB Tutorial deserves its own book!!! When you’re faced with Security concerns, smaller is usually MUCH BETTER because it’s much easier to conceal your Security Systems. MANY, MANY THANKS & Best Wishes, Michele Moore
+
+Reply
+52. JB November 2, 2025 at 12:55 pm 
+
+hi Rui and Sara. It would be great if you could find time at some point to make tutorials using zigbee on the Esp32 c6 module for example the XIAO C6 module and maybe even combined with home assistant.
+
+Reply
+
+- JB November 2, 2025 at 1:06 pm 
+
+by the way, it is possible to switch between onboard or the external antenna via software on XIAO ESP32 C6 module
+
+// Configure use of external antenna pinMode(WIFI_ENABLE, OUTPUT); // pinMode(3, OUTPUT); digitalWrite(WIFI_ENABLE, LOW); // digitalWrite(3, LOW); // Activate RF switch control delay(100); pinMode(WIFI_ANT_CONFIG, OUTPUT); // pinMode(14, OUTPUT); digitalWrite(WIFI_ANT_CONFIG, HIGH); // digitalWrite(14, HIGH); // Use external antenna
+
+Reply
+
+- JB November 2, 2025 at 2:45 pm 
+
+Sorry this is how it is done on XIAO ESP32 C6
+
+pinMode(3, OUTPUT); // RF switch power on digitalWrite(3, LOW); pinMode(14, OUTPUT); // select external antenna digitalWrite(14, HIGH); /* pinMode(14, INPUT); // select on-board antenna pinMode(3, INPUT); // RF switch power off */
+
+Reply
+
+- Sara Santos November 3, 2025 at 10:18 am 
+
+Thanks for sharing. I didn’t know about that. Did you see much difference on using different antennas?
+
+Regards, Sara
+
+Reply
+
+- JB November 4, 2025 at 1:20 pm 
+
+Absolutely best with external antenna.
+- Sara Santos November 3, 2025 at 10:18 am 
+
+Thanks for the suggestion. we still don’t have any tutorials about Zigbee. Is there a particular module that you recommend? Regards, Sara
+
+Reply
+
+- JB November 4, 2025 at 1:16 pm 
+
+Yes, I’m currently running zigbee on XIAO esp32 C6 module with a Bme280 sensor. I’m then running Home Assistant on a Raspberry Pi 5 with a Sonoff USB Dongle | Zigbee 3.0 (ZBDongle-E) dongle.
+
+Reply
+53. JB November 4, 2025 at 1:32 pm 
+
+Unfortunately I don’t get notifications about my comments anymore, even though I check the notify box. I also don’t get notifications on new posts. so I don’t always get to see if people reply to me. I have to check myself.
+
+Reply
+54. Bhavik November 13, 2025 at 4:33 pm 
+
+Hi Sara and Friends,
+
+Which are the RTC GPIO pins on this ESP32 C3 Super Mini board. I don’t see them listed out in the pinout screenshots. Working on a project to get the ESP32 C3 in deep sleep mode and waken up by VL53L0X sensor.
+
+Regards, Bhavik
+
+Reply
+
+- Sara Santos November 13, 2025 at 4:49 pm 
+
+Hi. I believe they should be the same as a “regular” ESP32: https://randomnerdtutorials.com/esp32-pinout-reference-gpios/ But, I’m not sure.
+
+Regards, Sara
+
+Reply
+55. Mike Johnson November 22, 2025 at 4:15 pm 
+
+Hi Sara,
+
+I love your tutorials and eBooks – I have several, but unfortunately I cannot get the serial monitor to work with this tutorial – running IDE version 2.3.6 on my Macbook Pro – freshly updated boards and libraries. Have checked baud rate etc – but serial monitor just sits there doing nothing… Advice much appreciated!
+
+Best wishes and thanks,
+
+Mike
+
+Reply
+
+- Sara Santos November 23, 2025 at 11:21 am 
+
+Hi. What code are you running? Regards, Sara
+
+Reply
+
+- Mike Johnson November 23, 2025 at 8:05 pm 
+
+Hi Sara – thanks so much for getting back to me! Shortly after I sent this message, I realized that when I updated the Arduino IDE I had not noticed that the “USB CDC on Boot” setting had reset to “disabled” as soon as I set it to “Enabled” again – everything was working again! Thanks so much for a great tutorial!
+
+Best wishes,
+
+Mike
+
+Reply
+
+- Sara Santos November 24, 2025 at 10:14 am 
+
+Great. I’m glad the issue is resolved. Regards, Sara
+
+Reply
+56. ewrgerqg w3 November 27, 2025 at 6:12 pm 
+
+is new version with 72×40 0.4 inch screen it working . I fount this github.com/01Space/ESP32-C3-0.42LCD/tree/main very interesting repo
+
+Reply
+57. Luis December 5, 2025 at 11:37 am 
+
+Hello. I really enjoy your content. Well presented, and simple examples. However, your LED bliking example has the Serial.begin() inside the loop. Are you sure this is what was intended? Serial.begin() is initiated at the setup(), not in the loop. I specially enjoyed your ESPNOW content. Bom Natal
+
+Reply
+
+- Sara Santos December 5, 2025 at 12:01 pm 
+
+Hi. You’re right. Thanks for letting me know.
+
+I’ll fix the code.
+
+REgards, Sara
+
+Reply
+58. LINDA VALENTINA TELLEZ CRUZ December 5, 2025 at 12:15 pm 
+
+hi I’m having a problem with my ESP32-C3. When I send the code, I don’t see anything in the monitor’s serial number. so i dont have the idea So I have no idea if it’s connected to the Wi-Fi network,ip does not appear.
+
+can you help me
+
+Reply
+
+- Sara Santos December 6, 2025 at 5:12 pm 
+
+Hi. Di you enable the following option in the Tools menu > USB CDC on Boot? Also, did you reset the board after opening the Serial Monitor? Regards, Sara
+
+Reply
+59. BobT December 9, 2025 at 11:42 pm 
+
+I’ve been playing with the XAIO_ESP32C3 with some success. A couple of pluses for me-
+
+USB-C connector. 2 pads for connecting a LiPO battery. Battery charging built in… A charging LED tells you when the battery is fully charged. No LED when running off of battery. Connector for small external antenna- much better range.
+
+I have one set up to send me an email with a current temperature measurement (via DS18B20) once an hour and then deep sleep. 1000ma LiPO should last for quite a while.
+
+Reply
+60. André December 14, 2025 at 6:34 pm 
+
+Hi, I wanna share a way to power that solved my problem with “E BOD: Brownout detector was triggered” that couldn’t let I get the MAC Address, neither connect to WiFi. I powered the board with a 18650 battery connected to 3,3v with an 1n4007 diode in series and a 1000uf 16v capacitor connecting 3,3v and GND and it works fine.
+
+Reply
+
+- Sara Santos December 16, 2025 at 12:15 am 
+
+That’s great. Thanks for sharing that option.
+
+Regards, Sara
+
+Reply
+61. jvabole February 15, 2026 at 6:55 am 
+
+Esp32-c3 board from AliExpress has a problem – wifi connection is very unstable. The problem is apparently in the power supply circuit. The problem can be solved by reducing the transmission power. In the case of arduino Wifi.begin(ssid_char, password_char); Wifi.settxpower(wifi_power_8_5dbm);
+
+Reply
+
+- Sara Santos February 15, 2026 at 11:01 am 
+
+Hi.
+
+Thanks for sharing. Regards, Sara
+
+Reply
+- bobby February 15, 2026 at 11:33 am 
+
+Are you sure this is due to power supply issue? There are reports of the antenna being inappropriately placed, which causes the tx to back-off at higher power, causing connection issues. Have a look at the antenna mods for that board that improve RSSI by 6-10dB, and apparently fix the issue with the connectivity of the aliexpress boards. The mod I’m describing is a half loop and a straight piece of wire connected in parallel with the chip antenna.
+
+Reply
+62. bablb March 25, 2026 at 6:41 pm 
+
+its wrong. you should have to enable “USB CDC on Boot” in Tools to communicate
+
+Reply
+
+- Janis March 26, 2026 at 12:38 pm 
+
+of course
+
+Reply
+63. Michael L. May 11, 2026 at 2:53 am 
+
+Thank you for your great tutorials! Can you offer any thoughts why I cannot ever see any serial output on the C3 mini? I often have the same problem with ESP32-S3 Zero as well, though no issues with the full size NODEMCU-32 V1.2 – still using IDE v1.8.19
+
+Reply
+
+- Sara Santos May 11, 2026 at 9:39 am 
+
+Hi. What happens when you open the Serial Monitor? Do you get any errors? Can you upload code to the boarD? Regards, Sara
+
+Reply
+
+- Michael May 11, 2026 at 6:37 pm 
+
+Hi Sara, thanks for the reply. The code loaded and ran, just never got any of the serial messages. After a lot of research, trying fixes, and a few different C3 hardware profiles, everything works as intended simply after selecting the LOLIN C3 Mini. It was a Temu purchase, so had zero information on it.
+
+Cheers, Michael
+
+Reply
+64. jvabole May 11, 2026 at 10:02 am 
+
+The problem could be in Win10, when the COM port number assigned to Win10 is different in the esp32c3 programming and operating modes, in which case the number must be specified manually in Win, the same for both cases.
+
+Reply
+
+- Michael May 11, 2026 at 6:38 pm 
+
+See reply to Sara…
+
+Reply
+65. Mariano Marini May 13, 2026 at 11:31 am 
+
+First of all I regret for my bad English. I have such a board and try Web Server SW. It doesn’t connect to my router. Reprogrammed to scan available wifi network and my router appear on the list. So wifi module seem to work. Some time it connect after a while and suddenly disconnect. No way to connect to. Thanks
+
+Reply
+
+- Sara Santos May 13, 2026 at 9:08 pm 
+
+Hi. Is your board relatively close to your router? So that it can catch the wi.fi signal? What happens exactly when it disconnects? Regards, Sara
+
+Reply
+
+- Mariano May 14, 2026 at 6:41 am 
+
+Simply. I can’t see the SSID on my Pc. Usually it can’t connect and in the serial monitor I see a long sequence of dot. This is the output of a short sketch that initialize the AP and wait for connections. Access Point avviato Indirizzo IP: 192.168.4.1 Dispositivi connessi: 0 Dispositivi connessi: 0 Dispositivi connessi: 0 Dispositivi connessi: 0 I’ve also try to connect to a hide network. But no chance to connect.
+
+Reply
+
+- Sara Santos May 15, 2026 at 8:37 am 
+
+Double-check the password. Uppercase and lowercase matter, and spaces too. It seems a problem with the SSID/Pass combination.
+
+Reply
+66. Mariano Marini May 14, 2026 at 4:44 pm 
+
+I ‘ve write a small sketch to start AP service and print number of connection. This is what I get on the Monitor Console. ESP-ROM:esp32c3-api1-20210207 Build:Feb 7 2021 rst:0x1 (POWERON),boot:0xd (SPI_FAST_FLASH_BOOT) SPIWP:0xee mode:DIO, clock div:1 load:0x3fcd5820,len:0x110c load:0x403cbf10,len:0xb54 load:0x403ce710,len:0x2f8c entry 0x403cbf10 Access Point avviato Indirizzo IP: 192.168.4.1 Dispositivi connessi: 0 Dispositivi connessi: 0 Dispositivi connessi: 0
+
+Reply
+67. Tehmosp Khan June 5, 2026 at 3:17 pm 
+
+Just wanted to say that you are awesome! You have enabled me and so many others with their projects.
+
+Good job and good luck! I am your fan!
+
+Tehmosp
+
+Reply
+
+ESP32 Fixed IP Address

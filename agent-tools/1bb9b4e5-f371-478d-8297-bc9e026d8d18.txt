@@ -1,0 +1,434 @@
+[
+ {
+ "name": "BLEClientConnection.cpp",
+ "path": "src/BLEClientConnection.cpp",
+ "sha": "65dad112f6432c9a8720c99c6edc05a6904633bc",
+ "size": 11415,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEClientConnection.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEClientConnection.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/65dad112f6432c9a8720c99c6edc05a6904633bc",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/BLEClientConnection.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEClientConnection.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/65dad112f6432c9a8720c99c6edc05a6904633bc",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEClientConnection.cpp"
+ }
+ },
+ {
+ "name": "BLEClientConnection.h",
+ "path": "src/BLEClientConnection.h",
+ "sha": "8f0810dff2c8c34c79fb9c74e307c24b16d2f653",
+ "size": 5744,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEClientConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEClientConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/8f0810dff2c8c34c79fb9c74e307c24b16d2f653",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/BLEClientConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEClientConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/8f0810dff2c8c34c79fb9c74e307c24b16d2f653",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEClientConnection.h"
+ }
+ },
+ {
+ "name": "BLEConnection.cpp",
+ "path": "src/BLEConnection.cpp",
+ "sha": "915db847efa529581fbe998f26b5963892ed41b0",
+ "size": 8992,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEConnection.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEConnection.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/915db847efa529581fbe998f26b5963892ed41b0",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/BLEConnection.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEConnection.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/915db847efa529581fbe998f26b5963892ed41b0",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEConnection.cpp"
+ }
+ },
+ {
+ "name": "BLEConnection.h",
+ "path": "src/BLEConnection.h",
+ "sha": "2b45b7d15c5971c3d3954c680e61363785c7aa2f",
+ "size": 2802,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/2b45b7d15c5971c3d3954c680e61363785c7aa2f",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/BLEConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BLEConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/2b45b7d15c5971c3d3954c680e61363785c7aa2f",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BLEConnection.h"
+ }
+ },
+ {
+ "name": "BleMidiPacket.h",
+ "path": "src/BleMidiPacket.h",
+ "sha": "ba7f8f4355aeff0aeda4f5d145b2e2c7ed4fed7e",
+ "size": 3040,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BleMidiPacket.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BleMidiPacket.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/ba7f8f4355aeff0aeda4f5d145b2e2c7ed4fed7e",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/BleMidiPacket.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/BleMidiPacket.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/ba7f8f4355aeff0aeda4f5d145b2e2c7ed4fed7e",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/BleMidiPacket.h"
+ }
+ },
+ {
+ "name": "ESP32_Host_MIDI.h",
+ "path": "src/ESP32_Host_MIDI.h",
+ "sha": "519cb963ea5bf875162715563e31dfb4251684eb",
+ "size": 2805,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/ESP32_Host_MIDI.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/ESP32_Host_MIDI.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/519cb963ea5bf875162715563e31dfb4251684eb",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/ESP32_Host_MIDI.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/ESP32_Host_MIDI.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/519cb963ea5bf875162715563e31dfb4251684eb",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/ESP32_Host_MIDI.h"
+ }
+ },
+ {
+ "name": "ESPNowConnection.cpp",
+ "path": "src/ESPNowConnection.cpp",
+ "sha": "9c4b9f41f1c0e3979adbaac0bdb844d0127bcdd2",
+ "size": 4554,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/ESPNowConnection.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/ESPNowConnection.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/9c4b9f41f1c0e3979adbaac0bdb844d0127bcdd2",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/ESPNowConnection.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/ESPNowConnection.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/9c4b9f41f1c0e3979adbaac0bdb844d0127bcdd2",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/ESPNowConnection.cpp"
+ }
+ },
+ {
+ "name": "ESPNowConnection.h",
+ "path": "src/ESPNowConnection.h",
+ "sha": "18cbf7f44bfb3a9e1d0a862c2931d230f481617e",
+ "size": 2662,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/ESPNowConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/ESPNowConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/18cbf7f44bfb3a9e1d0a862c2931d230f481617e",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/ESPNowConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/ESPNowConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/18cbf7f44bfb3a9e1d0a862c2931d230f481617e",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/ESPNowConnection.h"
+ }
+ },
+ {
+ "name": "EthernetMIDIConnection.h",
+ "path": "src/EthernetMIDIConnection.h",
+ "sha": "d78088e04ce68529c8ea56c426252c5f8b17d8ae",
+ "size": 8353,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/EthernetMIDIConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/EthernetMIDIConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/d78088e04ce68529c8ea56c426252c5f8b17d8ae",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/EthernetMIDIConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/EthernetMIDIConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/d78088e04ce68529c8ea56c426252c5f8b17d8ae",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/EthernetMIDIConnection.h"
+ }
+ },
+ {
+ "name": "GingoAdapter.h",
+ "path": "src/GingoAdapter.h",
+ "sha": "e8b0ee17e2d7125b9f3bc7482c7cb3fcf1393d5e",
+ "size": 8868,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/GingoAdapter.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/GingoAdapter.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e8b0ee17e2d7125b9f3bc7482c7cb3fcf1393d5e",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/GingoAdapter.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/GingoAdapter.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e8b0ee17e2d7125b9f3bc7482c7cb3fcf1393d5e",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/GingoAdapter.h"
+ }
+ },
+ {
+ "name": "MIDI2Adapter.h",
+ "path": "src/MIDI2Adapter.h",
+ "sha": "e60ee981cc0facaa917fd24dccc0255818de6262",
+ "size": 10796,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDI2Adapter.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDI2Adapter.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e60ee981cc0facaa917fd24dccc0255818de6262",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/MIDI2Adapter.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDI2Adapter.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e60ee981cc0facaa917fd24dccc0255818de6262",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDI2Adapter.h"
+ }
+ },
+ {
+ "name": "MIDI2Support.h",
+ "path": "src/MIDI2Support.h",
+ "sha": "ae7cea1f061b2f6f2fa7cf2fca7ebd789381244a",
+ "size": 15864,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDI2Support.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDI2Support.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/ae7cea1f061b2f6f2fa7cf2fca7ebd789381244a",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/MIDI2Support.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDI2Support.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/ae7cea1f061b2f6f2fa7cf2fca7ebd789381244a",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDI2Support.h"
+ }
+ },
+ {
+ "name": "MIDI2UDPConnection.h",
+ "path": "src/MIDI2UDPConnection.h",
+ "sha": "d9ca9796e83275bf6762699033f17ad5205df1f7",
+ "size": 10774,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDI2UDPConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDI2UDPConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/d9ca9796e83275bf6762699033f17ad5205df1f7",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/MIDI2UDPConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDI2UDPConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/d9ca9796e83275bf6762699033f17ad5205df1f7",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDI2UDPConnection.h"
+ }
+ },
+ {
+ "name": "MIDIHandler.cpp",
+ "path": "src/MIDIHandler.cpp",
+ "sha": "994ca1ca62f53600afa8cf189b951a2646a42ef7",
+ "size": 24815,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDIHandler.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDIHandler.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/994ca1ca62f53600afa8cf189b951a2646a42ef7",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/MIDIHandler.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDIHandler.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/994ca1ca62f53600afa8cf189b951a2646a42ef7",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDIHandler.cpp"
+ }
+ },
+ {
+ "name": "MIDIHandler.h",
+ "path": "src/MIDIHandler.h",
+ "sha": "34e846f92a3b3af15b140788d74c806368fc1ffe",
+ "size": 9839,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDIHandler.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDIHandler.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/34e846f92a3b3af15b140788d74c806368fc1ffe",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/MIDIHandler.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDIHandler.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/34e846f92a3b3af15b140788d74c806368fc1ffe",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDIHandler.h"
+ }
+ },
+ {
+ "name": "MIDIHandlerConfig.h",
+ "path": "src/MIDIHandlerConfig.h",
+ "sha": "e5835d6979f66c708d3239a94fa975272af26806",
+ "size": 2263,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDIHandlerConfig.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDIHandlerConfig.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e5835d6979f66c708d3239a94fa975272af26806",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/MIDIHandlerConfig.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDIHandlerConfig.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e5835d6979f66c708d3239a94fa975272af26806",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDIHandlerConfig.h"
+ }
+ },
+ {
+ "name": "MIDITransport.h",
+ "path": "src/MIDITransport.h",
+ "sha": "cc010aedee2479647a4b37f9bdb925f04a85245d",
+ "size": 3157,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDITransport.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDITransport.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/cc010aedee2479647a4b37f9bdb925f04a85245d",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/MIDITransport.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/MIDITransport.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/cc010aedee2479647a4b37f9bdb925f04a85245d",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/MIDITransport.h"
+ }
+ },
+ {
+ "name": "OSCConnection.h",
+ "path": "src/OSCConnection.h",
+ "sha": "03b5f0e1f1f2782e3dba5aaa83a44e3fb0e8ee3a",
+ "size": 8456,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/OSCConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/OSCConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/03b5f0e1f1f2782e3dba5aaa83a44e3fb0e8ee3a",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/OSCConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/OSCConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/03b5f0e1f1f2782e3dba5aaa83a44e3fb0e8ee3a",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/OSCConnection.h"
+ }
+ },
+ {
+ "name": "RTPMIDIConnection.cpp",
+ "path": "src/RTPMIDIConnection.cpp",
+ "sha": "9c993ce02b2eb00f09c8ac94d7f38342c1628430",
+ "size": 289,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/RTPMIDIConnection.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/RTPMIDIConnection.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/9c993ce02b2eb00f09c8ac94d7f38342c1628430",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/RTPMIDIConnection.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/RTPMIDIConnection.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/9c993ce02b2eb00f09c8ac94d7f38342c1628430",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/RTPMIDIConnection.cpp"
+ }
+ },
+ {
+ "name": "RTPMIDIConnection.h",
+ "path": "src/RTPMIDIConnection.h",
+ "sha": "7e8199b9805e11337d9144f4494a36533be8cc7e",
+ "size": 7996,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/RTPMIDIConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/RTPMIDIConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/7e8199b9805e11337d9144f4494a36533be8cc7e",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/RTPMIDIConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/RTPMIDIConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/7e8199b9805e11337d9144f4494a36533be8cc7e",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/RTPMIDIConnection.h"
+ }
+ },
+ {
+ "name": "UARTConnection.cpp",
+ "path": "src/UARTConnection.cpp",
+ "sha": "886fee3da3ea880247fe2b2d674ce30c863c9e1c",
+ "size": 5112,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/UARTConnection.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/UARTConnection.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/886fee3da3ea880247fe2b2d674ce30c863c9e1c",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/UARTConnection.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/UARTConnection.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/886fee3da3ea880247fe2b2d674ce30c863c9e1c",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/UARTConnection.cpp"
+ }
+ },
+ {
+ "name": "UARTConnection.h",
+ "path": "src/UARTConnection.h",
+ "sha": "50e231fdd9819cf83233bac26bb0ff01299054b2",
+ "size": 2476,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/UARTConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/UARTConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/50e231fdd9819cf83233bac26bb0ff01299054b2",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/UARTConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/UARTConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/50e231fdd9819cf83233bac26bb0ff01299054b2",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/UARTConnection.h"
+ }
+ },
+ {
+ "name": "USBConnection.cpp",
+ "path": "src/USBConnection.cpp",
+ "sha": "20b689d7a7bbb6767c7b8e2ce3da478cd778bd08",
+ "size": 16231,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBConnection.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBConnection.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/20b689d7a7bbb6767c7b8e2ce3da478cd778bd08",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/USBConnection.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBConnection.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/20b689d7a7bbb6767c7b8e2ce3da478cd778bd08",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBConnection.cpp"
+ }
+ },
+ {
+ "name": "USBConnection.h",
+ "path": "src/USBConnection.h",
+ "sha": "e4822a66ba40fef5e0807dcac5c5bde25609339f",
+ "size": 3525,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBConnection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBConnection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e4822a66ba40fef5e0807dcac5c5bde25609339f",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/USBConnection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBConnection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/e4822a66ba40fef5e0807dcac5c5bde25609339f",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBConnection.h"
+ }
+ },
+ {
+ "name": "USBMIDI2Connection.cpp",
+ "path": "src/USBMIDI2Connection.cpp",
+ "sha": "f2ffe7ad73f7034fc6608db41aeb74d50a35e4af",
+ "size": 17274,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBMIDI2Connection.cpp?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBMIDI2Connection.cpp",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/f2ffe7ad73f7034fc6608db41aeb74d50a35e4af",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/USBMIDI2Connection.cpp",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBMIDI2Connection.cpp?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/f2ffe7ad73f7034fc6608db41aeb74d50a35e4af",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBMIDI2Connection.cpp"
+ }
+ },
+ {
+ "name": "USBMIDI2Connection.h",
+ "path": "src/USBMIDI2Connection.h",
+ "sha": "f2283cf21385298f30571144af763d766f65f3b8",
+ "size": 5634,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBMIDI2Connection.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBMIDI2Connection.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/f2283cf21385298f30571144af763d766f65f3b8",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/USBMIDI2Connection.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBMIDI2Connection.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/f2283cf21385298f30571144af763d766f65f3b8",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBMIDI2Connection.h"
+ }
+ },
+ {
+ "name": "USBMIDITransportCore.h",
+ "path": "src/USBMIDITransportCore.h",
+ "sha": "7d0bf089f35d0da16429cb8b65cd390f4b0ce96a",
+ "size": 13766,
+ "url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBMIDITransportCore.h?ref=main",
+ "html_url": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBMIDITransportCore.h",
+ "git_url": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/7d0bf089f35d0da16429cb8b65cd390f4b0ce96a",
+ "download_url": "https://raw.githubusercontent.com/sauloverissimo/ESP32_Host_MIDI/main/src/USBMIDITransportCore.h",
+ "type": "file",
+ "_links": {
+ "self": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/contents/src/USBMIDITransportCore.h?ref=main",
+ "git": "https://api.github.com/repos/sauloverissimo/ESP32_Host_MIDI/git/blobs/7d0bf089f35d0da16429cb8b65cd390f4b0ce96a",
+ "html": "https://github.com/sauloverissimo/ESP32_Host_MIDI/blob/main/src/USBMIDITransportCore.h"
+ }
+ }
+]

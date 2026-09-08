@@ -1,0 +1,10 @@
+.pio/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+__pycache__/
+*.pyc
+compile_commands.json
