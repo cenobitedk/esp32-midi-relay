@@ -1,14 +1,13 @@
 #pragma once
 
-// Hardware pins for an ESP32-S3 Super Mini.
-// GPIO43/44 are UART0 (silk TX/RX). This sketch uses USB CDC for Serial,
-// so those pins are available for MIDI DIN-5. Do not use GPIO19/20 — they
-// are USB D-/D+ on the S3.
+// Hardware pins for an ESP32-C3 Super Mini.
+// GPIO20/21 are UART0 by default (silk RX/TX). This sketch uses USB CDC
+// for Serial, so those pins are available for MIDI DIN-5.
 #ifndef MIDI_RX_PIN
-#define MIDI_RX_PIN 44   // labeled RX; optocoupler output (MIDI IN)
+#define MIDI_RX_PIN 20   // labeled RX; optocoupler output (MIDI IN)
 #endif
 #ifndef MIDI_TX_PIN
-#define MIDI_TX_PIN 43   // labeled TX; MIDI OUT driver (-1 to disable TX)
+#define MIDI_TX_PIN 21   // labeled TX; MIDI OUT driver (-1 to disable TX)
 #endif
 
 // Both ends of an ESP-NOW link must use the same 2.4 GHz channel (1-13).
@@ -25,12 +24,12 @@
 #define ESPNOW_PEER_MAC 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 #endif
 
-// Super Mini red LED + WS2812 share GPIO48, active high. Set to -1 to disable.
+// Super Mini user LED is GPIO8, active low. Set to -1 to disable.
 #ifndef STATUS_LED_PIN
-#define STATUS_LED_PIN 48
+#define STATUS_LED_PIN 8
 #endif
 #ifndef STATUS_LED_ACTIVE_LOW
-#define STATUS_LED_ACTIVE_LOW 0
+#define STATUS_LED_ACTIVE_LOW 1
 #endif
 
 // Log every bridged message on USB serial.

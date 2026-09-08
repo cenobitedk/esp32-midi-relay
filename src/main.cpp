@@ -157,7 +157,7 @@ void setup() {
     setLed(false);
 #endif
 
-    // GPIO43/44 are UART0 on the S3 Super Mini (silk TX/RX). Serial is USB
+    // GPIO20/21 are UART0 on the C3 Super Mini (silk RX/TX). Serial is USB
     // CDC (the USB-C port), so MIDI uses Serial0 and debug logs stay on USB.
     if (!uartMIDI.begin(Serial0, MIDI_RX_PIN, MIDI_TX_PIN)) {
         Serial.println("UART MIDI begin() failed");
