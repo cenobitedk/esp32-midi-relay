@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP32_Host_MIDI.h>
 #include <UARTConnection.h>
+#include <WiFi.h>
 #include <esp_wifi.h>
 
 #include "config.h"
