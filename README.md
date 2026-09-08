@@ -1,6 +1,6 @@
-# UART DIN-5 ↔ ESP-NOW MIDI bridge (ESP32-C3 Mini)
+# UART DIN-5 ↔ ESP-NOW MIDI bridge (ESP32-C3 Super Mini)
 
-Firmware for an **ESP32-C3 Mini / Super Mini** that bridges standard 5-pin DIN MIDI to ESP-NOW using [ESP32_Host_MIDI](https://github.com/sauloverissimo/ESP32_Host_MIDI). Two boards running this sketch become a wireless MIDI cable. One board can also talk to any other ESP32 that sends or receives MIDI over ESP-NOW with the same library.
+Firmware for an **ESP32-C3 Super Mini** that bridges standard 5-pin DIN MIDI to ESP-NOW using [ESP32_Host_MIDI](https://github.com/sauloverissimo/ESP32_Host_MIDI). Two boards running this sketch become a wireless MIDI cable. One board can also talk to any other ESP32 that sends or receives MIDI over ESP-NOW with the same library.
 
 ## How transports actually work
 
@@ -46,7 +46,7 @@ ESP-NOW does not normally deliver a board its own broadcasts, so the source chec
 
 ## Hardware
 
-Default pins (`src/config.h`): **GPIO 20 = MIDI IN**, **GPIO 21 = MIDI OUT**. Debug logs use native USB CDC (`Serial`). MIDI runs on `Serial0` (UART0), which is the native mapping for those two pins on the C3.
+Default pins (`src/config.h`): **GPIO 20 (RX) = MIDI IN**, **GPIO 21 (TX) = MIDI OUT**. Debug logs use native USB CDC (`Serial`). MIDI runs on `Serial0` (UART0), which is the native mapping for the Super Mini's labeled RX/TX pins.
 
 ### MIDI IN (optocoupler required)
 
@@ -54,18 +54,18 @@ Standard current-loop input. Example with a 6N138 / PC900V / H11L1:
 
 - DIN pin 4 → 220 Ω → optocoupler LED anode
 - DIN pin 5 → LED cathode
-- Optocoupler output → GPIO 20
+- Optocoupler output → GPIO 20 (RX)
 - Follow the coupler datasheet for VCC / pull-up (3.3 V on the ESP32 side)
 
 ### MIDI OUT
 
 - ESP32 3.3 V (or 5 V from the Mini's 5 V pin, preferred) → 220 Ω → DIN pin 4
-- GPIO 21 → 220 Ω → DIN pin 5
+- GPIO 21 (TX) → 220 Ω → DIN pin 5
 - DIN pin 2 → GND (cable shield)
 
 3.3 V out works with a lot of modern gear; 5 V is closer to the MIDI spec.
 
-ESP32-C3 Super Mini LED is GPIO 8 (active low) and flashes on each bridged message.
+ESP32-C3 Super Mini user LED is GPIO 8 (active low) and flashes on each bridged message.
 
 ## Build and flash
 
@@ -76,15 +76,16 @@ pio run -t upload
 pio device monitor
 ```
 
-Need the Arduino-ESP32 3.x core (the library's ESP-NOW callbacks depend on it). This `platformio.ini` pulls [pioarduino](https://github.com/pioarduino/platform-espressif32).
+Need the Arduino-ESP32 3.x core (the library's ESP-NOW callbacks depend on it). This `platformio.ini` pulls [pioarduino](https://github.com/pioarduino/platform-espressif32) and uses the [ESP32-C3 Super Mini](https://www.espboards.dev/esp32/esp32-c3-super-mini/) board profile (`esp32-c3-devkitm-1`).
 
 ### Arduino IDE
 
 1. Boards Manager: **esp32** by Espressif, 3.0 or newer.
-2. Board: ESP32C3 Dev Module (or your Super Mini variant).
+2. Board: **ESP32C3 Dev Module**.
 3. **USB CDC On Boot: Enabled**.
-4. Library Manager: install **ESP32_Host_MIDI**.
-5. Copy `src/main.cpp`, `src/config.h`, and `src/ESPNowMidi.h` into a sketch folder (rename `main.cpp` to `your_sketch.ino`).
+4. Flash Size: **4MB**. Super Mini clones usually need Flash Mode **DIO**.
+5. Library Manager: install **ESP32_Host_MIDI**.
+6. Copy `src/main.cpp`, `src/config.h`, and `src/ESPNowMidi.h` into a sketch folder (rename `main.cpp` to `your_sketch.ino`).
 
 ## Configure
 
