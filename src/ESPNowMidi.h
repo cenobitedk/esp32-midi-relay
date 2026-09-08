@@ -1,51 +1,63 @@
 #pragma once
 
-#include <ESPNowConnection.h>
+#include <MIDITransport.h>
 #include <WiFi.h>
 #include <esp_now.h>
 #include <esp_wifi.h>
 #include <atomic>
 #include <cstring>
 
-// Arduino-ESP32 3.x default ESP-NOW PHY (same as libraries/ESP_NOW).
-#ifndef MIDI_RELAY_ESPNOW_RATE
-#define MIDI_RELAY_ESPNOW_RATE \
-    { .phymode = WIFI_PHY_MODE_11G, .rate = WIFI_PHY_RATE_1M_L, .ersu = false, .dcm = false }
+#include "config.h"
+
+#ifndef ESPNOW_TX_POWER
+#define ESPNOW_TX_POWER -4
 #endif
 
-// ESPNowConnection::sendMidiMessage() always transmits to the broadcast
-// address, even after addPeer(). This wrapper:
-//   - pins the radio with a hidden SoftAP so STA cannot hop channels
-//   - waits for Arduino 3.x STA/AP to start before esp_now_init()
-//   - learns sender MACs (C3/ESP-NOW v2 is unreliable with unknown peers)
-//   - sends a 2-byte beacon so RX can be verified without MIDI
-class ESPNowMidi : public ESPNowConnection {
+// ESP32-C3 Super Mini ESP-NOW:
+//   - Disconnected STA can TX "success" while RX is asleep. A hidden SoftAP
+//     keeps the radio up; ESP-NOW itself stays on WIFI_IF_STA (Arduino 3.x).
+//   - Cheap Super Mini antennas + high TX power saturate RX at a few cm.
+//     Default power is WIFI_POWER_MINUS_1dBm (see ESPNOW_TX_POWER).
+class ESPNowMidi : public MIDITransport {
 public:
+    const char* name() const override { return "ESP-NOW"; }
+    bool isConnected() const override { return initialized; }
+
     bool beginBroadcast(uint8_t channel) {
         useUnicast = false;
         return start(channel, nullptr);
     }
 
     bool beginUnicast(uint8_t channel, const uint8_t mac[6]) {
-        if (!start(channel, mac)) {
+        if (!start(channel, nullptr)) {
             return false;
         }
         memcpy(peerMac, mac, 6);
+        if (!rememberPeer(mac)) {
+            Serial.println("ESP-NOW add unicast peer failed");
+            return false;
+        }
         useUnicast = true;
         return true;
     }
 
     bool sendMidiMessage(const uint8_t* data, size_t length) override {
-        if (!isConnected() || data == nullptr || length == 0 || length > 3) {
+        if (!initialized || data == nullptr || length == 0 || length > 3) {
             return false;
         }
-        static const uint8_t kBroadcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         const uint8_t* dest = useUnicast ? peerMac : kBroadcast;
         return esp_now_send(dest, data, length) == ESP_OK;
     }
 
     void task() override {
         rememberPendingPeer();
+        if (haveFirstRx && !printedFirstRx) {
+            printedFirstRx = true;
+            Serial.printf("ESP-NOW first RX  src=%02X:%02X:%02X:%02X:%02X:%02X  len=%d  rssi=%d dBm\n",
+                          firstRxMac[0], firstRxMac[1], firstRxMac[2],
+                          firstRxMac[3], firstRxMac[4], firstRxMac[5],
+                          firstRxLen, firstRxRssi);
+        }
         Packet pkt;
         while (dequeue(pkt)) {
             dispatchMidiData(pkt.data, pkt.length);
@@ -53,17 +65,27 @@ public:
     }
 
     void sendBeacon() {
-        if (!isConnected()) {
+        if (!initialized) {
             return;
         }
         static const uint8_t kBeacon[2] = {kBeacon0, kBeacon1};
-        static const uint8_t kBroadcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
         esp_now_send(kBroadcast, kBeacon, sizeof(kBeacon));
     }
 
     bool isUnicast() const { return useUnicast; }
+
+    // ESP-NOW runs on the STA interface, so unicast peers must use this MAC.
+    void getLocalMAC(uint8_t mac[6]) const {
+        WiFi.macAddress(mac);
+    }
+
+    void getApMAC(uint8_t mac[6]) const {
+        WiFi.softAPmacAddress(mac);
+    }
+
     void getPeerMAC(uint8_t mac[6]) const { memcpy(mac, peerMac, 6); }
 
+    int8_t lastRssi() const { return lastRxRssi; }
     uint32_t txOkCount() const { return txOk.load(); }
     uint32_t txFailCount() const { return txFail.load(); }
     uint32_t rxCount() const { return rxTotal.load(); }
@@ -74,12 +96,14 @@ private:
     static constexpr uint8_t kBeacon0 = 0xF4;
     static constexpr uint8_t kBeacon1 = 0xA5;
     static constexpr int kQueueSize = 64;
+    static constexpr uint8_t kBroadcast[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
     struct Packet {
         uint8_t data[4];
         size_t length;
     };
 
+    bool initialized = false;
     bool useUnicast = false;
     uint8_t peerMac[6] = {};
     uint8_t radioChannel = 1;
@@ -92,6 +116,13 @@ private:
     uint8_t pendingSrc[6] = {};
     volatile bool havePendingSrc = false;
 
+    uint8_t firstRxMac[6] = {};
+    volatile int firstRxLen = 0;
+    volatile int8_t firstRxRssi = 0;
+    volatile int8_t lastRxRssi = 0;
+    volatile bool haveFirstRx = false;
+    bool printedFirstRx = false;
+
     static ESPNowMidi* self;
     static std::atomic<uint32_t> txOk;
     static std::atomic<uint32_t> txFail;
@@ -99,26 +130,48 @@ private:
     static std::atomic<uint32_t> rxBeacon;
     static std::atomic<uint32_t> learnedPeers;
 
-    bool start(uint8_t channel, const uint8_t* unicastMac) {
-        self = this;
-        radioChannel = channel;
-        if (!prepareRadio(channel)) {
-            return false;
+    static bool waitStarted(uint32_t timeoutMs) {
+        const uint32_t deadline = millis() + timeoutMs;
+        while ((int32_t)(millis() - deadline) < 0) {
+            if (WiFi.STA.started() && WiFi.AP.started()) {
+                return true;
+            }
+            delay(10);
         }
-        if (!begin(channel)) {
-            return false;
-        }
-        lockChannel(channel);
-        fixBroadcastPeer(channel);
-        if (unicastMac != nullptr && !rememberPeer(unicastMac)) {
-            return false;
-        }
-        hookCallbacks();
-        return true;
+        return WiFi.STA.started() && WiFi.AP.started();
     }
 
-    static bool prepareRadio(uint8_t channel) {
+    static void lockChannel(uint8_t channel) {
+        if (channel < 1 || channel > 13) {
+            return;
+        }
+        WiFi.setChannel(channel, WIFI_SECOND_CHAN_NONE);
+        esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
+    }
+
+    static void applyRate(const uint8_t* mac) {
+        // 1 Mbps 802.11b is the most reliable PHY on Super Mini ceramics.
+        esp_now_rate_config_t rate = {};
+        rate.phymode = WIFI_PHY_MODE_11B;
+        rate.rate = WIFI_PHY_RATE_1M_L;
+        rate.ersu = false;
+        rate.dcm = false;
+        const esp_err_t err = esp_now_set_peer_rate_config(mac, &rate);
+        if (err != ESP_OK) {
+            Serial.printf("esp_now_set_peer_rate_config: %s\n", esp_err_to_name(err));
+        }
+    }
+
+    bool start(uint8_t channel, const uint8_t* /*unused*/) {
+        self = this;
+        radioChannel = channel;
+
         WiFi.persistent(false);
+        WiFi.disconnect(true, true);
+        delay(50);
+
+        // AP+STA: SoftAP holds the channel and keeps RX awake; ESP-NOW TX/RX
+        // uses the STA interface, matching Arduino 3.x broadcast examples.
         WiFi.mode(WIFI_AP_STA);
 
         wifi_country_t country = {};
@@ -129,54 +182,89 @@ private:
         country.policy = WIFI_COUNTRY_POLICY_MANUAL;
         esp_wifi_set_country(&country);
 
-        if (channel >= 1 && channel <= 13) {
-            WiFi.setChannel(channel);
-        }
+        lockChannel(channel);
 
-        uint8_t mac[6] = {};
-        WiFi.macAddress(mac);
+        uint8_t staMac[6] = {};
+        WiFi.macAddress(staMac);
         char ssid[20];
-        snprintf(ssid, sizeof(ssid), "mr-%02X%02X%02X", mac[3], mac[4], mac[5]);
-        // Hidden AP pins the C3 on this channel so STA cannot scan/hop.
-        if (!WiFi.softAP(ssid, nullptr, channel, 1, 1)) {
+        snprintf(ssid, sizeof(ssid), "mr-%02X%02X%02X", staMac[3], staMac[4], staMac[5]);
+
+        if (!WiFi.softAP(ssid, nullptr, channel, 1, 4, false, WIFI_AUTH_OPEN)) {
+            Serial.println("ESP-NOW SoftAP start failed");
             return false;
         }
 
-        const uint32_t deadline = millis() + 2000;
-        while ((!WiFi.STA.started() || !WiFi.AP.started()) &&
-               (int32_t)(millis() - deadline) < 0) {
-            delay(10);
+        // SoftAP beacons at close range also slam the other Super Mini's LNA.
+        wifi_config_t apCfg = {};
+        if (esp_wifi_get_config(WIFI_IF_AP, &apCfg) == ESP_OK) {
+            apCfg.ap.beacon_interval = 1000;
+            esp_wifi_set_config(WIFI_IF_AP, &apCfg);
         }
-        if (!WiFi.STA.started() || !WiFi.AP.started()) {
+
+        if (!waitStarted(2000)) {
+            Serial.printf("ESP-NOW WiFi not started  STA=%d AP=%d\n",
+                          WiFi.STA.started(), WiFi.AP.started());
             return false;
         }
 
         WiFi.setSleep(false);
-        WiFi.setTxPower(WIFI_POWER_19_5dBm);
-        lockChannel(channel);
-        return true;
-    }
-
-    static void lockChannel(uint8_t channel) {
-        if (channel < 1 || channel > 13) {
-            return;
-        }
         esp_wifi_set_ps(WIFI_PS_NONE);
-        esp_wifi_set_channel(channel, WIFI_SECOND_CHAN_NONE);
-    }
+        lockChannel(channel);
 
-    void fixBroadcastPeer(uint8_t channel) {
-        uint8_t bcast[6];
-        memset(bcast, 0xFF, 6);
-        esp_now_peer_info_t peer = {};
-        if (esp_now_get_peer(bcast, &peer) != ESP_OK) {
-            return;
+        if (!WiFi.setTxPower(static_cast<wifi_power_t>(ESPNOW_TX_POWER))) {
+            Serial.println("ESP-NOW setTxPower failed");
         }
-        peer.channel = channel;
-        peer.encrypt = false;
-        peer.ifidx = WIFI_IF_STA;
-        esp_now_mod_peer(&peer);
-        applyRate(bcast);
+
+        esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_11B);
+        esp_wifi_set_protocol(WIFI_IF_AP, WIFI_PROTOCOL_11B);
+#ifdef WIFI_PHY_RATE_1M_L
+        esp_wifi_config_espnow_rate(WIFI_IF_STA, WIFI_PHY_RATE_1M_L);
+#endif
+
+        const esp_err_t initErr = esp_now_init();
+        if (initErr != ESP_OK) {
+            Serial.printf("esp_now_init: %s\n", esp_err_to_name(initErr));
+            return false;
+        }
+
+        uint32_t version = 0;
+        esp_now_get_version(&version);
+        Serial.printf("ESP-NOW version %u  if=STA  channel %u\n", version, channel);
+
+        if (esp_now_register_recv_cb(onRecv) != ESP_OK) {
+            Serial.println("esp_now_register_recv_cb failed");
+            return false;
+        }
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 3, 0)
+        if (esp_now_register_send_cb(onSend) != ESP_OK) {
+            Serial.println("esp_now_register_send_cb failed");
+            return false;
+        }
+#else
+        if (esp_now_register_send_cb(onSendLegacy) != ESP_OK) {
+            Serial.println("esp_now_register_send_cb failed");
+            return false;
+        }
+#endif
+
+        // channel 0 = current home channel. A stale non-zero channel is a
+        // silent TX-success / RX-nothing failure on IDF 5.x.
+        esp_now_peer_info_t bcast = {};
+        memcpy(bcast.peer_addr, kBroadcast, 6);
+        bcast.channel = 0;
+        bcast.encrypt = false;
+        bcast.ifidx = WIFI_IF_STA;
+        const esp_err_t peerErr = esp_now_add_peer(&bcast);
+        if (peerErr != ESP_OK && peerErr != ESP_ERR_ESPNOW_EXIST) {
+            Serial.printf("esp_now_add_peer broadcast: %s\n", esp_err_to_name(peerErr));
+            return false;
+        }
+        applyRate(kBroadcast);
+
+        lockChannel(channel);
+        initialized = true;
+        dispatchConnected();
+        return true;
     }
 
     bool rememberPeer(const uint8_t mac[6]) {
@@ -185,30 +273,17 @@ private:
         }
         esp_now_peer_info_t peer = {};
         memcpy(peer.peer_addr, mac, 6);
-        peer.channel = radioChannel;
+        peer.channel = 0;
         peer.encrypt = false;
         peer.ifidx = WIFI_IF_STA;
         const esp_err_t err = esp_now_add_peer(&peer);
         if (err != ESP_OK && err != ESP_ERR_ESPNOW_EXIST) {
+            Serial.printf("esp_now_add_peer: %s\n", esp_err_to_name(err));
             return false;
         }
         applyRate(mac);
         learnedPeers.fetch_add(1);
         return true;
-    }
-
-    static void applyRate(const uint8_t mac[6]) {
-        esp_now_rate_config_t rate = MIDI_RELAY_ESPNOW_RATE;
-        esp_now_set_peer_rate_config(mac, &rate);
-    }
-
-    void hookCallbacks() {
-#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 3, 0)
-        esp_now_register_send_cb(onSend);
-#else
-        esp_now_register_send_cb(onSendLegacy);
-#endif
-        esp_now_register_recv_cb(onRecv);
     }
 
     void rememberPendingPeer() {
@@ -254,63 +329,61 @@ private:
 
 #if ESP_ARDUINO_VERSION_MAJOR >= 3
     static void onRecv(const esp_now_recv_info_t* info, const uint8_t* data, int len) {
-        if (self == nullptr || data == nullptr || len < 2) {
+#else
+    static void onRecv(const uint8_t* mac, const uint8_t* data, int len) {
+#endif
+        if (self == nullptr || data == nullptr || len <= 0) {
             return;
         }
         rxTotal.fetch_add(1);
+#if ESP_ARDUINO_VERSION_MAJOR >= 3
         if (info != nullptr && info->src_addr != nullptr) {
             memcpy(self->pendingSrc, info->src_addr, 6);
             self->havePendingSrc = true;
+            if (info->rx_ctrl != nullptr) {
+                self->lastRxRssi = info->rx_ctrl->rssi;
+            }
+            if (!self->haveFirstRx) {
+                memcpy(self->firstRxMac, info->src_addr, 6);
+                self->firstRxLen = len;
+                self->firstRxRssi = self->lastRxRssi;
+                self->haveFirstRx = true;
+            }
         }
-        if (isBeacon(data, len)) {
-            rxBeacon.fetch_add(1);
-            return;
-        }
-        if (len > 3) {
-            return;
-        }
-        self->enqueue(data, static_cast<size_t>(len));
-    }
 #else
-    static void onRecv(const uint8_t* mac, const uint8_t* data, int len) {
-        if (self == nullptr || data == nullptr || len < 2) {
-            return;
-        }
-        rxTotal.fetch_add(1);
         if (mac != nullptr) {
             memcpy(self->pendingSrc, mac, 6);
             self->havePendingSrc = true;
+            if (!self->haveFirstRx) {
+                memcpy(self->firstRxMac, mac, 6);
+                self->firstRxLen = len;
+                self->haveFirstRx = true;
+            }
         }
+#endif
         if (isBeacon(data, len)) {
             rxBeacon.fetch_add(1);
             return;
         }
-        if (len > 3) {
+        if (len < 2 || len > 3) {
             return;
         }
         self->enqueue(data, static_cast<size_t>(len));
     }
-#endif
 
 #if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 3, 0)
     static void onSend(const wifi_tx_info_t* info, esp_now_send_status_t status) {
         (void)info;
-        if (status == ESP_NOW_SEND_SUCCESS) {
-            txOk.fetch_add(1);
-        } else {
-            txFail.fetch_add(1);
-        }
-    }
 #else
     static void onSendLegacy(const uint8_t* mac, esp_now_send_status_t status) {
         (void)mac;
+#endif
         if (status == ESP_NOW_SEND_SUCCESS) {
             txOk.fetch_add(1);
         } else {
             txFail.fetch_add(1);
         }
     }
-#endif
 };
 
 ESPNowMidi* ESPNowMidi::self = nullptr;
@@ -319,3 +392,5 @@ std::atomic<uint32_t> ESPNowMidi::txFail{0};
 std::atomic<uint32_t> ESPNowMidi::rxTotal{0};
 std::atomic<uint32_t> ESPNowMidi::rxBeacon{0};
 std::atomic<uint32_t> ESPNowMidi::learnedPeers{0};
+
+constexpr uint8_t ESPNowMidi::kBroadcast[6];

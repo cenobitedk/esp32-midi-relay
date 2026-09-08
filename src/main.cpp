@@ -189,7 +189,10 @@ void setup() {
 
     uint8_t localMac[6] = {};
     espNow.getLocalMAC(localMac);
-    printMac("This board MAC", localMac);
+    printMac("This board STA MAC (use this for ESPNOW_PEER_MAC)", localMac);
+    uint8_t apMac[6] = {};
+    espNow.getApMAC(apMac);
+    printMac("This board AP MAC", apMac);
 
     uint8_t channel = 0;
     wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
@@ -199,6 +202,8 @@ void setup() {
     if (channel != ESPNOW_CHANNEL) {
         Serial.println("WARNING: radio channel does not match ESPNOW_CHANNEL — boards will not see each other");
     }
+    Serial.printf("TX power: %d (quarter-dBm; Super Mini needs this low at 1-2cm)\n",
+                  static_cast<int>(WiFi.getTxPower()));
     Serial.printf("UART MIDI: RX=GPIO%d TX=GPIO%d @ 31250 baud\n",
                   MIDI_RX_PIN, MIDI_TX_PIN);
 
@@ -266,7 +271,7 @@ void loop() {
         wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
         esp_wifi_get_channel(&liveChannel, &second);
         Serial.printf(
-            "stats  UART->NOW=%lu  NOW->UART=%lu  ch=%u  tx_ok=%lu  tx_fail=%lu  rx=%lu  beacon=%lu  peers=%lu\n",
+            "stats  UART->NOW=%lu  NOW->UART=%lu  ch=%u  tx_ok=%lu  tx_fail=%lu  rx=%lu  beacon=%lu  peers=%lu  rssi=%d\n",
             (unsigned long)uartToNowCount,
             (unsigned long)nowToUartCount,
             (unsigned)liveChannel,
@@ -274,6 +279,7 @@ void loop() {
             (unsigned long)espNow.txFailCount(),
             (unsigned long)espNow.rxCount(),
             (unsigned long)espNow.beaconCount(),
-            (unsigned long)espNow.peerCount());
+            (unsigned long)espNow.peerCount(),
+            (int)espNow.lastRssi());
     }
 }

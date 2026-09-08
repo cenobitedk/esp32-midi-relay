@@ -18,10 +18,18 @@
 #endif
 
 // Unicast peer MAC. Leave all zeros for broadcast (any board on ESPNOW_CHANNEL
-// hears the MIDI). For a point-to-point link, set the other board's MAC
+// hears the MIDI). For a point-to-point link, set the other board's STA MAC
 // printed at boot, e.g. 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
 #ifndef ESPNOW_PEER_MAC
 #define ESPNOW_PEER_MAC 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+#endif
+
+// ESP-NOW TX power in 0.25 dBm units (wifi_power_t). Super Mini clones often
+// fail to receive at centimetre range with the default ~19.5 dBm — the other
+// board's LNA saturates. -4 is WIFI_POWER_MINUS_1dBm. Raise to 8 (2 dBm) or
+// 34 (8.5 dBm) if you need more range after RX is working.
+#ifndef ESPNOW_TX_POWER
+#define ESPNOW_TX_POWER -4
 #endif
 
 // Super Mini user LED is GPIO8, active low. Set to -1 to disable.

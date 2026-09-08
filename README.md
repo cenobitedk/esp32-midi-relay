@@ -30,19 +30,38 @@ DIN-5 OUT <-- UARTConnection <-- queue (source=&espNow)   <-- ESP-NOW radio
 
 ## ESP-NOW details
 
-`ESPNowConnection::begin(channel)` starts Wi-Fi in station mode **without joining an access point**, then starts ESP-NOW. There is no pairing handshake.
+This firmware does **not** use `ESPNowConnection::begin()` as-is. On Arduino-ESP32 3.x a disconnected STA can report ESP-NOW send success while the receiver is asleep, and ESP32-C3 Super Mini boards often fail to receive at centimetre range if TX power is left at ~19.5 dBm (the other radio's front-end saturates; many clones also have a ceramic antenna sitting next to the crystal).
 
 | Topic | Behavior in this project |
 |--------|--------------------------|
-| Addressing | Broadcast by default (`FF:FF:FF:FF:FF:FF`). Optional unicast via `ESPNOW_PEER_MAC` in `src/config.h`. |
+| Wi-Fi | Hidden open SoftAP **plus** STA. SoftAP pins the channel and keeps RX awake. ESP-NOW itself uses `WIFI_IF_STA`. |
+| Addressing | Broadcast by default (`FF:FF:FF:FF:FF:FF`). Optional unicast via `ESPNOW_PEER_MAC` — use the other board's **STA MAC** printed at boot. |
 | Channel | Fixed to `ESPNOW_CHANNEL` (default **1**). Both boards must match. |
+| TX power | `ESPNOW_TX_POWER` in `src/config.h`, default **-1 dBm**. Raise after RX works if you need more range. |
+| PHY | 802.11b 1 Mbps. |
 | Payload | 2–3 MIDI bytes. Notes, CC, program change, channel pressure, pitch bend. |
 | Not carried | SysEx (too long). Clock / Start / Stop (1-byte realtime is dropped on ESP-NOW receive). |
-| Library quirk | Upstream `sendMidiMessage()` always broadcasts, even after `addPeer()`. This repo wraps it in `src/ESPNowMidi.h` so unicast actually sends to the peer MAC. |
+| Keepalive | 1 Hz 2-byte beacon (`F4 A5`) so you can confirm the radios hear each other without MIDI. |
 
-On boot the USB serial monitor prints this board's MAC. Paste that MAC into the other board's `ESPNOW_PEER_MAC` if you want a point-to-point link instead of a mesh broadcast.
+On boot the USB serial monitor prints this board's STA MAC (use that for unicast) and AP MAC. Flash **both** boards from the same build. ESP-NOW does not normally deliver a board its own broadcasts, so the source check in the bridge is mainly so a received packet is not put back on the air.
 
-ESP-NOW does not normally deliver a board its own broadcasts, so the source check is mainly for **two-ended bridges**: without it, board B would take a packet from A and put it back on the air, and every extra node would multiply traffic.
+`midiHandler.addTransport(&espNow)` is what wires receive into the queue. Do **not** copy `espNow.setMidiCallback(...)` from the jam example — that sketch does not use MIDIHandler, and replacing the callback would stop events from reaching the bridge.
+
+If one board logs `UART -> NOW` but the other stays at `NOW->UART=0`:
+
+1. Flash **both** boards with this firmware. Mixed builds will not link.
+2. Boot lines must show the same `ESP-NOW channel` and `STA started=1  AP started=1`.
+3. Watch `beacon` in the stats line. Both boards send a packet every second; if `beacon` stays 0, the radios are not linked yet (`tx_ok` on broadcast does **not** prove anyone heard it).
+4. 1–2 cm is too close at high TX power. This build defaults to -1 dBm so that distance can work. After `beacon` climbs, you can move them apart and raise `ESPNOW_TX_POWER` (8 = 2 dBm, 34 = 8.5 dBm).
+5. First successful packet logs `ESP-NOW first RX` with source MAC and RSSI. RSSI around 0 dBm still means “too close / too loud”; -40 to -70 dBm is healthy.
+
+The stats line prints radio health:
+
+- `tx_ok` / `tx_fail` — ESP-NOW send callback (broadcast `tx_ok` does **not** prove anyone heard it)
+- `rx` — any ESP-NOW packet that reached this board
+- `beacon` — 1 Hz keepalive from the other board
+- `peers` — remote MACs learned from received packets
+- `rssi` — last received packet (0 until the first one)
 
 ## Hardware
 
@@ -96,13 +115,12 @@ Edit `src/config.h`:
 #define MIDI_TX_PIN 21
 #define ESPNOW_CHANNEL 1
 #define ESPNOW_PEER_MAC 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // broadcast
+#define ESPNOW_TX_POWER -4  // WIFI_POWER_MINUS_1dBm; raise after RX works
 ```
 
-Use two boards on the same channel. For unicast, set each board's `ESPNOW_PEER_MAC` to the **other** board's printed MAC.
+Use two boards on the same channel. For unicast, set each board's `ESPNOW_PEER_MAC` to the **other** board's printed **STA MAC**.
 
-`midiHandler.addTransport(&espNow)` is what wires receive into the queue. Do **not** copy `espNow.setMidiCallback(...)` from the jam example — that sketch does not use MIDIHandler, and replacing the callback would stop events from reaching the bridge.
-
-If one board logs `UART -> NOW` but the other stays at `NOW->UART=0`, check that both boot lines show the same `ESP-NOW channel`, `WiFi STA started=1`, and `AP started=1`. Super Mini antennas are weak; keep the boards close while testing.
+If one board logs `UART -> NOW` but the other stays at `NOW->UART=0`, check that both boot lines show the same `ESP-NOW channel`, `WiFi STA started=1`, and `AP started=1`. Super Mini antennas are weak **and** overload at a couple of centimetres if TX power is high — this firmware starts at -1 dBm.
 
 The stats line prints radio health:
 
@@ -110,21 +128,26 @@ The stats line prints radio health:
 - `rx` — any ESP-NOW packet that reached this board
 - `beacon` — 1 Hz keepalive from the other board. If this stays 0, the radios are not linked yet
 - `peers` — remote MACs learned from received packets
+- `rssi` — last received packet
 
 ## Serial log
 
 ```
 UART DIN-5 <-> ESP-NOW MIDI bridge
 ESP-NOW mode: broadcast
-This board MAC AA:BB:CC:DD:EE:FF
+ESP-NOW version 2  if=STA  channel 1
+This board STA MAC (use this for ESPNOW_PEER_MAC) AA:BB:CC:DD:EE:FF
+This board AP MAC AA:BB:CC:DD:EE:00
 WiFi STA started=1  AP started=1  ESP-NOW channel: 1 (configured 1)
+TX power: -4 (quarter-dBm; Super Mini needs this low at 1-2cm)
 UART MIDI: RX=GPIO20 TX=GPIO21 @ 31250 baud
 Transports:
   [0] UART connected=1
   [1] ESP-NOW connected=1
+ESP-NOW first RX  src=AA:BB:CC:DD:EE:11  len=2  rssi=-48 dBm
 UART -> NOW NoteOn ch=1 C4 vel=100
 NOW -> UART NoteOff ch=1 C4 vel=0
-stats  UART->NOW=12  NOW->UART=12  ch=1  tx_ok=12  tx_fail=0  rx=24  beacon=12  peers=1
+stats  UART->NOW=12  NOW->UART=12  ch=1  tx_ok=12  tx_fail=0  rx=24  beacon=12  peers=1  rssi=-48
 ```
 
 ## License
