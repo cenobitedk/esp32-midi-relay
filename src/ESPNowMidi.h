@@ -4,6 +4,7 @@
 #include <WiFi.h>
 #include <esp_now.h>
 #include <esp_wifi.h>
+#include <atomic>
 #include <cstring>
 
 // ESPNowConnection::sendMidiMessage() always transmits to the broadcast
@@ -59,14 +60,14 @@ public:
 
     void getPeerMAC(uint8_t mac[6]) const { memcpy(mac, peerMac, 6); }
 
-    uint32_t txOkCount() const { return txOk; }
-    uint32_t txFailCount() const { return txFail; }
+    uint32_t txOkCount() const { return txOk.load(); }
+    uint32_t txFailCount() const { return txFail.load(); }
 
 private:
     bool useUnicast = false;
     uint8_t peerMac[6] = {};
-    static volatile uint32_t txOk;
-    static volatile uint32_t txFail;
+    static std::atomic<uint32_t> txOk;
+    static std::atomic<uint32_t> txFail;
 
     static bool prepareRadio(uint8_t channel) {
         WiFi.persistent(false);
@@ -109,22 +110,22 @@ private:
     static void onSend(const wifi_tx_info_t* info, esp_now_send_status_t status) {
         (void)info;
         if (status == ESP_NOW_SEND_SUCCESS) {
-            txOk++;
+            txOk.fetch_add(1);
         } else {
-            txFail++;
+            txFail.fetch_add(1);
         }
     }
 #else
     static void onSendLegacy(const uint8_t* mac, esp_now_send_status_t status) {
         (void)mac;
         if (status == ESP_NOW_SEND_SUCCESS) {
-            txOk++;
+            txOk.fetch_add(1);
         } else {
-            txFail++;
+            txFail.fetch_add(1);
         }
     }
 #endif
 };
 
-volatile uint32_t ESPNowMidi::txOk = 0;
-volatile uint32_t ESPNowMidi::txFail = 0;
+std::atomic<uint32_t> ESPNowMidi::txOk{0};
+std::atomic<uint32_t> ESPNowMidi::txFail{0};
