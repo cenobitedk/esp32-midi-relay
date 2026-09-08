@@ -24,6 +24,7 @@ static int lastEventIndex = -1;
 static uint32_t uartToNowCount = 0;
 static uint32_t nowToUartCount = 0;
 static uint32_t lastStatusMs = 0;
+static uint32_t lastBeaconMs = 0;
 static uint32_t ledOffMs = 0;
 
 static bool peerMacConfigured(const uint8_t mac[6]) {
@@ -193,8 +194,8 @@ void setup() {
     uint8_t channel = 0;
     wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
     esp_wifi_get_channel(&channel, &second);
-    Serial.printf("WiFi STA started=%d  ESP-NOW channel: %u (configured %u)\n",
-                  WiFi.STA.started(), channel, ESPNOW_CHANNEL);
+    Serial.printf("WiFi STA started=%d  AP started=%d  ESP-NOW channel: %u (configured %u)\n",
+                  WiFi.STA.started(), WiFi.AP.started(), channel, ESPNOW_CHANNEL);
     if (channel != ESPNOW_CHANNEL) {
         Serial.println("WARNING: radio channel does not match ESPNOW_CHANNEL — boards will not see each other");
     }
@@ -211,6 +212,11 @@ void setup() {
 
 void loop() {
     midiHandler.task();
+
+    if (millis() - lastBeaconMs >= 1000) {
+        lastBeaconMs = millis();
+        espNow.sendBeacon();
+    }
 
     const auto& queue = midiHandler.getQueue();
     for (const auto& ev : queue) {
@@ -259,11 +265,15 @@ void loop() {
         uint8_t liveChannel = 0;
         wifi_second_chan_t second = WIFI_SECOND_CHAN_NONE;
         esp_wifi_get_channel(&liveChannel, &second);
-        Serial.printf("stats  UART->NOW=%lu  NOW->UART=%lu  ch=%u  tx_ok=%lu  tx_fail=%lu\n",
-                      (unsigned long)uartToNowCount,
-                      (unsigned long)nowToUartCount,
-                      (unsigned)liveChannel,
-                      (unsigned long)espNow.txOkCount(),
-                      (unsigned long)espNow.txFailCount());
+        Serial.printf(
+            "stats  UART->NOW=%lu  NOW->UART=%lu  ch=%u  tx_ok=%lu  tx_fail=%lu  rx=%lu  beacon=%lu  peers=%lu\n",
+            (unsigned long)uartToNowCount,
+            (unsigned long)nowToUartCount,
+            (unsigned)liveChannel,
+            (unsigned long)espNow.txOkCount(),
+            (unsigned long)espNow.txFailCount(),
+            (unsigned long)espNow.rxCount(),
+            (unsigned long)espNow.beaconCount(),
+            (unsigned long)espNow.peerCount());
     }
 }
