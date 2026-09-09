@@ -84,15 +84,16 @@ pio device monitor
 
 Need Arduino-ESP32 3.x. This `platformio.ini` pulls [pioarduino](https://github.com/pioarduino/platform-espressif32) and uses `board = esp32dev` as on the [generic 30-pin](https://www.espboards.dev/esp32/esp32-30pin-devkit-generic/) and [DevKit V1](https://www.espboards.dev/esp32/esp32doit-devkit-v1/) pages. Upload is **115200** by default so CH340 clones can keep up.
 
-### If upload fails (`Timed out waiting for packet header` / `Failed to connect`)
+### If upload fails
 
-The sketch is not the problem — the chip never entered download mode. Work down this list:
+The sketch is not the problem — the USB-serial chip never delivered a clean download. Work down this list:
 
 1. **Data cable, not charge-only.** Prefer a short cable straight into the computer, not a hub.
-2. **USB-serial driver.** Look at the tiny IC next to Micro-USB: CH340C/G needs the [WCH driver](https://www.wch.cn/downloads/CH341SER_EXE.html); CP2102 needs [Silicon Labs](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers). Close any serial monitor, then check that a COM / `/dev/ttyUSB*` / `/dev/cu.usbserial*` port appears.
-3. **BOOT button (most clones).** Hold **BOOT**, click Upload, keep holding until you see `Connecting......` turn into writing, then release. If that still times out: hold **BOOT**, tap **EN** (reset), keep holding BOOT until it connects.
-4. **Unplug MIDI / breadboard from GPIO0, GPIO2, and GPIO12** while flashing. Those are strapping pins. GPIO16/17 (MIDI) are fine.
-5. Still stuck: hold BOOT the whole time and upload with `pio run -e esp32-30pin-devkit-generic -t upload`.
+2. **Close the serial monitor** before Upload.
+3. **CH9102X on macOS.** If the port is `/dev/cu.usbmodem…` and esptool dies with `Failed to write to target RAM (result was 0107: Checksum error)`, Apple's CDC driver is talking to the chip. Install the [WCH CH34x macOS driver](https://github.com/WCHSoftGroup/ch34xser_macos) (CH9102 is included). On macOS 11+: open **CH34xVCPDriver**, click Install, then enable it under **System Settings → General → Login Items & Extensions → Driver Extensions**. Unplug/replug. The port must become `/dev/cu.wchusbserial…`, not `usbmodem`. This `platformio.ini` also passes `--no-stub` so upload can work before that driver is installed.
+4. **CH340 / CP2102.** Rectangle CH340: [WCH driver](https://www.wch.cn/downloads/CH341SER_EXE.html). Square CP2102: [Silicon Labs](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers).
+5. **BOOT button.** Hold **BOOT**, click Upload, keep holding until writing starts, then release. If that still times out: hold **BOOT**, tap **EN**, keep holding BOOT.
+6. **Unplug MIDI / breadboard from GPIO0, GPIO2, and GPIO12** while flashing. Those are strapping pins. GPIO16/17 (MIDI) are fine.
 
 ### Arduino IDE
 
