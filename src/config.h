@@ -23,12 +23,6 @@
 #define ESPNOW_PEER_MAC 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 #endif
 
-// ESP-NOW TX power in 0.25 dBm units (wifi_power_t). 78 is
-// WIFI_POWER_19_5dBm — normal for the WROOM-32 PCB antenna.
-#ifndef ESPNOW_TX_POWER
-#define ESPNOW_TX_POWER 78
-#endif
-
 // Onboard blue LED is GPIO2, active high. Set to -1 to disable.
 #ifndef STATUS_LED_PIN
 #define STATUS_LED_PIN 2
