@@ -1,8 +1,13 @@
-# UART DIN-5 ↔ ESP-NOW MIDI bridge (DOIT ESP32 DevKit V1)
+# UART DIN-5 ↔ ESP-NOW MIDI bridge (ESP32 30-pin DevKit)
 
-Firmware for a **DOIT ESP32 DevKit V1** (ESP32-WROOM-32, 30-pin) that bridges standard 5-pin DIN MIDI to ESP-NOW using [ESP32_Host_MIDI](https://github.com/sauloverissimo/ESP32_Host_MIDI). Two boards running this sketch become a wireless MIDI cable.
+Firmware for a **30-pin ESP32 DevKit** (ESP32-WROOM-32, PCB antenna) that bridges standard 5-pin DIN MIDI to ESP-NOW using [ESP32_Host_MIDI](https://github.com/sauloverissimo/ESP32_Host_MIDI). Two boards running this sketch become a wireless MIDI cable.
 
-Board profile: [esp32doit-devkit-v1](https://www.espboards.dev/esp32/esp32doit-devkit-v1/). Generic 30-pin DevKit V1 clones with a WROOM-32 and a PCB antenna are the same layout.
+This is the same hardware whether the silkscreen says DOIT, DevKit V1, or nothing:
+
+- [ESP32 30-Pin DevKit (generic clone)](https://www.espboards.dev/esp32/esp32-30pin-devkit-generic/)
+- [DOIT ESP32 DevKit V1](https://www.espboards.dev/esp32/esp32doit-devkit-v1/)
+
+Both use PlatformIO `board = esp32dev`. A clone vs a branded DOIT board is **not** why upload fails.
 
 ## How transports actually work
 
@@ -73,19 +78,27 @@ If the board brownout-resets when Wi-Fi transmits, use a short USB cable straigh
 ### PlatformIO
 
 ```bash
-pio run -e esp32doit-devkit-v1 -t upload
+pio run -e esp32-30pin-devkit-generic -t upload
 pio device monitor
 ```
 
-Need Arduino-ESP32 3.x. This `platformio.ini` pulls [pioarduino](https://github.com/pioarduino/platform-espressif32) and uses `board = esp32dev` as on the [DevKit V1 page](https://www.espboards.dev/esp32/esp32doit-devkit-v1/).
+Need Arduino-ESP32 3.x. This `platformio.ini` pulls [pioarduino](https://github.com/pioarduino/platform-espressif32) and uses `board = esp32dev` as on the [generic 30-pin](https://www.espboards.dev/esp32/esp32-30pin-devkit-generic/) and [DevKit V1](https://www.espboards.dev/esp32/esp32doit-devkit-v1/) pages. Upload is **115200** by default so CH340 clones can keep up.
 
-If the port does not appear, install a CP210x or CH340 driver depending on the USB-serial chip next to Micro-USB. Hold **BOOT** while plugging in if needed.
+### If upload fails (`Timed out waiting for packet header` / `Failed to connect`)
+
+The sketch is not the problem — the chip never entered download mode. Work down this list:
+
+1. **Data cable, not charge-only.** Prefer a short cable straight into the computer, not a hub.
+2. **USB-serial driver.** Look at the tiny IC next to Micro-USB: CH340C/G needs the [WCH driver](https://www.wch.cn/downloads/CH341SER_EXE.html); CP2102 needs [Silicon Labs](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers). Close any serial monitor, then check that a COM / `/dev/ttyUSB*` / `/dev/cu.usbserial*` port appears.
+3. **BOOT button (most clones).** Hold **BOOT**, click Upload, keep holding until you see `Connecting......` turn into writing, then release. If that still times out: hold **BOOT**, tap **EN** (reset), keep holding BOOT until it connects.
+4. **Unplug MIDI / breadboard from GPIO0, GPIO2, and GPIO12** while flashing. Those are strapping pins. GPIO16/17 (MIDI) are fine.
+5. Still stuck: hold BOOT the whole time and upload with `pio run -e esp32-30pin-devkit-generic -t upload`.
 
 ### Arduino IDE
 
 1. Boards Manager: **esp32** by Espressif, 3.0 or newer.
 2. Board: **ESP32 Dev Module**.
-3. Flash Size: **4MB**. Flash Mode: **DIO**. Upload Speed: **921600**.
+3. Flash Size: **4MB**. Flash Mode: **DIO**. Upload Speed: **115200**.
 4. Library Manager: install **ESP32_Host_MIDI**.
 5. Copy `src/main.cpp`, `src/config.h`, and `src/ESPNowMidi.h` into a sketch folder (rename `main.cpp` to `your_sketch.ino`).
 

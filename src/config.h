@@ -1,9 +1,9 @@
 #pragma once
 
-// Hardware pins for a DOIT ESP32 DevKit V1 (ESP32-WROOM-32, 30-pin).
+// Hardware pins for a 30-pin ESP32 DevKit (DOIT V1 or generic WROOM-32 clone).
 // UART0 (GPIO1 TX / GPIO3 RX) is wired to the USB-serial chip — leave it
 // for Serial debug. MIDI uses UART2 on the silk RX2/TX2 pins.
-// Board: https://www.espboards.dev/esp32/esp32doit-devkit-v1/
+// https://www.espboards.dev/esp32/esp32-30pin-devkit-generic/
 #ifndef MIDI_RX_PIN
 #define MIDI_RX_PIN 16  // RX2; optocoupler output (MIDI IN)
 #endif
