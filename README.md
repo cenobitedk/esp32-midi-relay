@@ -9,6 +9,8 @@ This is the same hardware whether the silkscreen says DOIT, DevKit V1, or nothin
 
 Both use PlatformIO `board = esp32dev`.
 
+**Do not use an ESP32-C3 Super Mini.** Those clones have a broken RF layout (ceramic antenna against the crystal). ESP-NOW transmit can look fine while the other board receives nothing. This firmware targets the 30-pin WROOM-32 DevKit only.
+
 ## How transports actually work
 
 The library does **not** route MIDI by itself.
