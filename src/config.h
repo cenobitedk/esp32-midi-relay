@@ -1,14 +1,14 @@
 #pragma once
 
-// Hardware pins for a 30-pin ESP32 DevKit (DOIT V1 or generic WROOM-32 clone).
-// UART0 (GPIO1 TX / GPIO3 RX) is wired to the USB-serial chip — leave it
-// for Serial debug. MIDI uses UART2 on the silk RX2/TX2 pins.
-// https://www.espboards.dev/esp32/esp32-30pin-devkit-generic/
+// Hardware pins for a Seeed Studio XIAO ESP32C3.
+// GPIO20/21 are UART0 (silk RX / TX). This sketch uses USB CDC for Serial,
+// so those pins are available for MIDI DIN-5.
+// https://www.espboards.dev/esp32/xiao-esp32c3/
 #ifndef MIDI_RX_PIN
-#define MIDI_RX_PIN 16  // RX2; optocoupler output (MIDI IN)
+#define MIDI_RX_PIN 20  // D7 / RX; optocoupler output (MIDI IN)
 #endif
 #ifndef MIDI_TX_PIN
-#define MIDI_TX_PIN 17  // TX2; MIDI OUT driver (-1 to disable TX)
+#define MIDI_TX_PIN 21  // D6 / TX; MIDI OUT driver (-1 to disable TX)
 #endif
 
 // Both ends of an ESP-NOW link must use the same 2.4 GHz channel (1-13).
@@ -23,9 +23,10 @@
 #define ESPNOW_PEER_MAC 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 #endif
 
-// Onboard blue LED is GPIO2, active high. Set to -1 to disable.
+// No onboard user LED (charge LED only). Wire an LED + resistor to D10
+// (GPIO10, active high) and set this to 10, or leave -1 to disable.
 #ifndef STATUS_LED_PIN
-#define STATUS_LED_PIN 2
+#define STATUS_LED_PIN -1
 #endif
 #ifndef STATUS_LED_ACTIVE_LOW
 #define STATUS_LED_ACTIVE_LOW 0
