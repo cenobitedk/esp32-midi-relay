@@ -156,9 +156,9 @@ void setup() {
     setLed(false);
 #endif
 
-    // UART0 (GPIO1/3) is the USB-serial chip. MIDI uses UART2 on RX2/TX2
-    // (GPIO16/17) so debug logs stay on Micro-USB.
-    if (!uartMIDI.begin(Serial2, MIDI_RX_PIN, MIDI_TX_PIN)) {
+    // GPIO20/21 are UART0 on the XIAO (silk RX/TX). Serial is USB CDC
+    // (the USB-C port), so MIDI uses Serial0 and debug logs stay on USB.
+    if (!uartMIDI.begin(Serial0, MIDI_RX_PIN, MIDI_TX_PIN)) {
         Serial.println("UART MIDI begin() failed");
     }
     midiHandler.addTransport(&uartMIDI);
@@ -188,7 +188,7 @@ void setup() {
     espNow.getLocalMAC(localMac);
     printMac("This board MAC", localMac);
     Serial.printf("ESP-NOW channel: %u\n", ESPNOW_CHANNEL);
-    Serial.printf("UART MIDI: RX=GPIO%d TX=GPIO%d @ 31250 baud (UART2)\n",
+    Serial.printf("UART MIDI: RX=GPIO%d TX=GPIO%d @ 31250 baud (UART0)\n",
                   MIDI_RX_PIN, MIDI_TX_PIN);
 
     Serial.println("Transports:");
