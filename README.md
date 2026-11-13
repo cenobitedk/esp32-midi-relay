@@ -37,12 +37,13 @@ That is the same pattern as the library's MIDI-Router example. The jam example i
 Receive and parsing come from the library's `ESPNowConnection`. `src/ESPNowMidi.h` only:
 
 - waits for Arduino-ESP32 3.x STA to start before `begin()`
+- sets `ESPNOW_COUNTRY` before the channel, so channels 12–13 actually transmit
 - sends to a unicast MAC when `ESPNOW_PEER_MAC` is set (upstream `sendMidiMessage()` always broadcasts)
 
 | Topic | Behavior |
 |--------|----------|
 | Addressing | Broadcast by default. Optional unicast via `ESPNOW_PEER_MAC` (the other board's MAC printed at boot). |
-| Channel | `ESPNOW_CHANNEL` (default **1**). Both boards must match. |
+| Channel | `ESPNOW_CHANNEL` (default **13**, country `DK`). Every board must match. The boot log prints the channel the radio actually took. |
 | Payload | 2–3 MIDI bytes. Notes, CC, program change, channel pressure, pitch bend. |
 | Not carried | SysEx (too long). Clock / Start / Stop (1-byte realtime is dropped on ESP-NOW receive). |
 
@@ -104,11 +105,12 @@ Need Arduino-ESP32 3.x ([pioarduino](https://github.com/pioarduino/platform-espr
 ```cpp
 #define MIDI_RX_PIN 20
 #define MIDI_TX_PIN 21
-#define ESPNOW_CHANNEL 1
+#define ESPNOW_CHANNEL 13
+#define ESPNOW_COUNTRY "DK"
 #define ESPNOW_PEER_MAC 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // broadcast
 ```
 
-Use two boards on the same channel. For unicast, set each board's `ESPNOW_PEER_MAC` to the **other** board's printed MAC.
+Flash the same build onto every board. They only hear each other when the boot line shows the same radio channel. For a two-board unicast link, set each board's `ESPNOW_PEER_MAC` to the **other** board's printed MAC. Leave it all zeros when more than two boards share the link.
 
 ## Serial log
 
@@ -116,7 +118,7 @@ Use two boards on the same channel. For unicast, set each board's `ESPNOW_PEER_M
 UART DIN-5 <-> ESP-NOW MIDI bridge
 ESP-NOW mode: broadcast
 This board MAC AA:BB:CC:DD:EE:FF
-ESP-NOW channel: 1
+ESP-NOW channel: 13 (radio 13, country DK)
 UART MIDI: RX=GPIO20 TX=GPIO21 @ 31250 baud (UART0)
 Transports:
   [0] UART connected=1
