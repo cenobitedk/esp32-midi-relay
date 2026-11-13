@@ -11,9 +11,14 @@
 #define MIDI_TX_PIN 21  // D6 / TX; MIDI OUT driver (-1 to disable TX)
 #endif
 
-// Both ends of an ESP-NOW link must use the same 2.4 GHz channel (1-13).
+// Every board must use the same 2.4 GHz channel (1-13).
+// Denmark allows 1-13. The ESP32 default country ("01") only transmits on
+// 1-11, so ESPNOW_COUNTRY has to be set or a request for 13 is ignored.
 #ifndef ESPNOW_CHANNEL
-#define ESPNOW_CHANNEL 1
+#define ESPNOW_CHANNEL 13
+#endif
+#ifndef ESPNOW_COUNTRY
+#define ESPNOW_COUNTRY "DK"
 #endif
 
 // Unicast peer MAC. Leave all zeros for broadcast (any board on ESPNOW_CHANNEL

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <ESP32_Host_MIDI.h>
 #include <UARTConnection.h>
+#include <esp_wifi.h>
 
 #include "config.h"
 #include "ESPNowMidi.h"
@@ -187,7 +188,24 @@ void setup() {
     uint8_t localMac[6] = {};
     espNow.getLocalMAC(localMac);
     printMac("This board MAC", localMac);
-    Serial.printf("ESP-NOW channel: %u\n", ESPNOW_CHANNEL);
+
+    uint8_t radioChannel = 0;
+    wifi_second_chan_t radioSecond = WIFI_SECOND_CHAN_NONE;
+    const bool haveRadioChannel = esp_wifi_get_channel(&radioChannel, &radioSecond) == ESP_OK;
+    if (haveRadioChannel) {
+        Serial.printf("ESP-NOW channel: %u (radio %u, country %s)\n",
+                      ESPNOW_CHANNEL, radioChannel, ESPNOW_COUNTRY);
+    } else {
+        Serial.printf("ESP-NOW channel: %u (country %s)\n",
+                      ESPNOW_CHANNEL, ESPNOW_COUNTRY);
+    }
+    if (!espNow.radioCountryOk()) {
+        Serial.printf("Wi-Fi country %s was rejected\n", ESPNOW_COUNTRY);
+    }
+    if (haveRadioChannel && radioChannel != ESPNOW_CHANNEL) {
+        Serial.printf("Radio stayed on channel %u. It will not hear boards on channel %u.\n",
+                      radioChannel, ESPNOW_CHANNEL);
+    }
     Serial.printf("UART MIDI: RX=GPIO%d TX=GPIO%d @ 31250 baud (UART0)\n",
                   MIDI_RX_PIN, MIDI_TX_PIN);
 

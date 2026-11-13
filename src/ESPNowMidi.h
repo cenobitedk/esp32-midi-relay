@@ -3,7 +3,10 @@
 #include <ESPNowConnection.h>
 #include <WiFi.h>
 #include <esp_now.h>
+#include <esp_wifi.h>
 #include <cstring>
+
+#include "config.h"
 
 // ESPNowConnection::sendMidiMessage() always transmits to the broadcast
 // address, even after addPeer(). This wrapper keeps the library transport
@@ -38,21 +41,33 @@ public:
 
     bool isUnicast() const { return useUnicast; }
 
+    // True when the radio accepted ESPNOW_COUNTRY. Channel 12-13 stays
+    // unavailable if this is false.
+    bool radioCountryOk() const { return countryOk; }
+
     void getPeerMAC(uint8_t mac[6]) const { memcpy(mac, peerMac, 6); }
 
 private:
     bool useUnicast = false;
+    bool countryOk = false;
     uint8_t peerMac[6] = {};
 
     bool start(uint8_t channel) {
         // Arduino-ESP32 3.x: STA must be started before esp_now_init().
         WiFi.mode(WIFI_STA);
-        if (channel >= 1 && channel <= 13) {
-            WiFi.setChannel(channel, WIFI_SECOND_CHAN_NONE);
-        }
         const uint32_t deadline = millis() + 2000;
         while (!WiFi.STA.started() && (int32_t)(millis() - deadline) < 0) {
             delay(10);
+        }
+
+        // Country before channel. The chip default only transmits on 1-11,
+        // and a later setChannel(13) is ignored until the country allows it.
+        // ieee80211d off: these boards never join an access point, so the
+        // country must not be replaced by one.
+        countryOk = esp_wifi_set_country_code(ESPNOW_COUNTRY, false) == ESP_OK;
+
+        if (channel >= 1 && channel <= 13) {
+            WiFi.setChannel(channel, WIFI_SECOND_CHAN_NONE);
         }
         return begin(channel);
     }
